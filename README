@@ -10,3 +10,5 @@ Alternatively, download the zip from
 unzip it into the blocks folder, and then rename the new folder to massaction.
     
 
+Once installed, capability "block/massaction:use" needs to be added to the roles/users
+(e.g. teacher) in order for them to be able to use the block. 
