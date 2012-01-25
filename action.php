@@ -48,10 +48,14 @@ $module_records = $DB->get_records_select('course_modules',
                                           'ID IN (' . implode(',', array_fill(0, count($data->module_ids), '?')) . ')',
                                           $data->module_ids);
 
+$courses_to_rebuild = array();    // keep track of courses to rebuild cache
+
 foreach ($data->module_ids as $mod_id) {
     if (!isset($module_records[$mod_id])) {
         print_error('invalidmoduleid', 'block_massaction', $mod_id);
     }
+
+    $courses_to_rebuild[$module_records[$mod_id]->course] = true;
 }
 
 if (!isset($data->action))
@@ -94,6 +98,10 @@ switch ($data->action) {
         print_error('invalidaction', 'block_massaction', $data->action);
 }
 
+// rebuild course cache
+foreach ($courses_to_rebuild as $course_id => $nada) {
+    rebuild_course_cache($course_id);
+}
 
 // redirect back to the previous page
 redirect($return_url);
@@ -119,8 +127,6 @@ function adjust_indentation($modules, $amount) {
 
         $DB->set_field('course_modules', 'indent', $cm->indent, array('id' => $cm->id));
     }
-
-    rebuild_course_cache($cm->course);
 }
 
 
@@ -138,8 +144,6 @@ function set_visibility($modules, $visible) {
     foreach ($modules as $cm) {
         set_coursemodule_visible($cm->id, $visible);
     }
-
-    rebuild_course_cache($cm->course);
 }
 
 
@@ -173,9 +177,9 @@ function print_deletion_confirmation($modules, $mode = 'preconfirm') {
     }
 
     $options_yes = array('del_preconfirm'  => 1,
-                         'instance_id'	   => $instance_id,
-                         'return_url'	   => $return_url,
-    					 'request'         => $massaction_request);
+                         'instance_id'     => $instance_id,
+                         'return_url'    => $return_url,
+                         'request'         => $massaction_request);
 
     if ($mode == 'confirm') {
         $options_yes['del_confirm'] = 1;
@@ -225,7 +229,7 @@ function print_deletion_confirmation($modules, $mode = 'preconfirm') {
  * @param array $modules
  */
 function perform_deletion($modules) {
-    global $CFG, $OUTPUT, $DB;
+    global $CFG, $OUTPUT, $DB, $USER;
 
     require_once($CFG->dirroot.'/course/lib.php');
 
@@ -280,8 +284,6 @@ function perform_deletion($modules) {
                    "view.php?id=$cm->course",
                    "$cm->modname $cm->instance", $cm->id);
     }
-
-    rebuild_course_cache($course->id);
 }
 
 
@@ -312,7 +314,5 @@ function perform_moveto($modules, $target) {
 
         moveto_module($cm_record, $section);
     }
-
-    rebuild_course_cache($course->id);
 }
 
