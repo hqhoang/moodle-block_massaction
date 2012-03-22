@@ -15,6 +15,9 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2012032201]
+- added additional checking to avoid Javascript error
+
 [2012032200]
 - added French translation from Luiggi Sansonetti
 

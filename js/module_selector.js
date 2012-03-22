@@ -56,7 +56,9 @@ module_selector.prototype.add_checkboxes = function() {
 
         for (var i = 0; i < LIs.length; i++) {
             // check if the LI is a module
-            if (YAHOO.util.Dom.getAttribute(LIs[i], 'id').substring(0, 7) == 'module-') {
+            var id = YAHOO.util.Dom.getAttribute(LIs[i], 'id');
+
+            if (id != null && id.substring(0, 7) == 'module-') {
                 self.add_module_checkbox(section_number, LIs[i]);
             }
         }
