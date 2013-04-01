@@ -16,7 +16,7 @@
 /**
  * @package    blocks
  * @subpackage massaction
- * @copyright  2011 University of Minnesota
+ * @copyright  2013 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
@@ -128,6 +128,7 @@ M.block_massaction.set_section_selection = function(value, section_number) {
     var sections = this.sections;
     var box_ids  = [];
 
+    // see if we are toggling all sections
     if (typeof section_number != 'undefined' && section_number == 'all') {
         for (var sec_id in sections) {
             for (var  j = 0; j < sections[sec_id].length; j++) {
@@ -138,8 +139,10 @@ M.block_massaction.set_section_selection = function(value, section_number) {
     else {
         var section_number = document.getElementById('mod-massaction-control-section-list-select').value;
 
-        for (var i = 0; i < sections[section_number].length; i++) {
-            box_ids.push(sections[section_number][i].box_id);
+        if (section_number != 'all') {
+            for (var i = 0; i < sections[section_number].length; i++) {
+                box_ids.push(sections[section_number][i].box_id);
+            }
         }
     }
 
@@ -212,4 +215,4 @@ M.block_massaction.submit_action = function(action) {
     // set the form value and submit
     document.getElementById('mod-massaction-control-request').value = this.Y.JSON.stringify(submit_data);
     document.getElementById('mod-massaction-control-form').submit();
-};
+}

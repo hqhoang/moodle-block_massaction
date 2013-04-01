@@ -1,4 +1,5 @@
 <?php
+
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -22,9 +23,20 @@
  */
 
 $capabilities = array(
-    // being able to use the block
     'block/massaction:use' => array(
-        'captype'          => 'modify',
-        'contextlevel'     => CONTEXT_BLOCK
-    )
+        'riskbitmask'          => RISK_DATALOSS,
+        'captype'              => 'write',
+        'contextlevel'         => CONTEXT_BLOCK,
+        'archetypes'           => array(
+            'editingteacher'  => CAP_ALLOW,
+            'manager'         => CAP_ALLOW)),
+
+    'block/massaction:addinstance' => array(
+        'riskbitmask'          => RISK_DATALOSS,
+        'captype'              => 'write',
+        'contextlevel'         => CONTEXT_BLOCK,
+        'archetypes'           => array(
+            'editingteacher'  => CAP_ALLOW,
+            'manager'         => CAP_ALLOW),
+        'clonepermissionsfrom' => 'moodle/site:manageblocks')
 );

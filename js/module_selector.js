@@ -24,7 +24,6 @@
 /**
  * a class that handles inserting checkboxes to the course sections
  */
-
 var module_selector = function() {
     /* a registry of checkbox IDs, of the format:
      *  'section_number' => [{'module_id'   : <module-ID>,
@@ -45,26 +44,28 @@ module_selector.prototype.add_checkboxes = function() {
     var self = this;
 
     var section_number   = 0;
-    var section          = document.getElementById('section-0');
+    var section = Y.one('#section-0');
 
     while (section) {
         // add the section to the registry
         self.sections[section_number] = [];
 
         // find all LI with class 'activity' or 'resource'
-        var LIs = YAHOO.util.Dom.getElementsByClassName('activity', 'li', section);
+        var LIs = section.all('li.activity');
 
-        for (var i = 0; i < LIs.length; i++) {
-            // check if the LI is a module
-            var id = YAHOO.util.Dom.getAttribute(LIs[i], 'id');
+        LIs.each(function(module_el) {
+            var module_id = module_el.getAttribute('id');
 
-            if (id != null && id.substring(0, 7) == 'module-') {
-                self.add_module_checkbox(section_number, LIs[i]);
+            // verify if it's a module container
+            if (module_id == null || module_id.substring(0, 7) != 'module-') {
+                return false;
             }
-        }
+
+            self.add_module_checkbox(section_number, module_el);
+        });
 
         section_number++;  // advance the loop
-        section = document.getElementById('section-' + section_number);
+        section = Y.one('#section-' + section_number);
     }
 };
 
@@ -76,21 +77,16 @@ module_selector.prototype.add_checkboxes = function() {
 module_selector.prototype.add_module_checkbox = function(section_number, module_el) {
     var self = this;
 
-    var module_id      = YAHOO.util.Dom.getAttribute(module_el, 'id');
-    var box_id         = 'module_selector-' + module_id;
+    var module_id = module_el.getAttribute('id');
+    var box_id = 'module_selector-' + module_id;
 
     // avoid creating duplicate checkboxes (in case sharing the library)
-    if (document.getElementById(box_id) == null) {
+    if (Y.one('#' + 'box_id') == null) {
         // add the checkbox
-        var box = document.createElement("input");
-        box.setAttribute('type', 'checkbox');
-        box.setAttribute('id', box_id);
-        box.setAttribute('name', box_id);
-        YAHOO.util.Dom.addClass(box, 'module_selector_checkbox');
+        var box = Y.Node.create('<input type="checkbox" id="' + box_id + '" class="module_sector_checkbox" />');
 
         // attach it to the command box
-        var command_box = YAHOO.util.Dom.getElementsByClassName('commands', 'span', module_el);
-        command_box[0].appendChild(box);
+        module_el.one('span.commands').appendChild(box);
     }
 
     // keep track in registry
