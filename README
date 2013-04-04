@@ -15,6 +15,12 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2013040400]
+- try to parse the section names into the listboxes when possible
+
+[2013040100]
+- updated to be compatible with Moodle 2.4
+
 [2012032201]
 - added additional checking to avoid Javascript error
 

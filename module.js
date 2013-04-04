@@ -50,27 +50,28 @@ M.block_massaction.init = function(Y, data) {
             var section_text = M.util.get_string('section_zero', 'block_massaction');
         }
         else {
-            // determine the option text depending on course format
-            switch (data.course_format) {
-                case 'weeks':
-                     // find the week text
-                     var weekdates_node = Y.one('#section-' + section_number + ' h3.weekdates');
-                     if (weekdates_node != null) {
-                         var section_text = M.util.get_string('week', 'block_massaction') + ' ' + section_number +
-                                            ': ' + weekdates_node.get('text').replace(/This week/, '');
-                     }
-                     else {
+            // find the section name
+            var sectionname_node = Y.one('#section-' + section_number + ' h3.sectionname');
+
+            if (sectionname_node != null) {
+                var section_text = sectionname_node.get('text');
+            }
+            else {
+
+                // determine the option text depending on course format
+                switch (data.course_format) {
+                    case 'weeks':
                          var section_text = M.util.get_string('week', 'block_massaction') + ' ' + section_number;
-                     }
-                     break;
+                         break;
 
-                case 'topics':
-                     var section_text = M.util.get_string('topic', 'block_massaction') + ' ' + section_number;
-                     break;
+                    case 'topics':
+                         var section_text = M.util.get_string('topic', 'block_massaction') + ' ' + section_number;
+                         break;
 
-                default:
-                     var section_text = M.util.get_string('section', 'block_massaction') + ' ' + section_number;
-                     break;
+                    default:
+                         var section_text = M.util.get_string('section', 'block_massaction') + ' ' + section_number;
+                         break;
+                }
             }
         }
 
