@@ -58,6 +58,10 @@ class block_massaction extends block_base {
             return $this->content;
         }
 
+        $this->content = new stdClass();
+        $this->content->text   = '';
+        $this->content->footer = '';
+
         if ($PAGE->user_is_editing()) {
             $jsmodule = array(
                 'name'         => 'block_massaction',
@@ -132,11 +136,7 @@ EOB;
 <div id="mod-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
 EOB;
         }
-        else {
-            $this->content = '';
-        }
 
-        $this->content->footer = '';
         return $this->content;
     }
 }

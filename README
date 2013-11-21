@@ -15,6 +15,9 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2013112100]
+- initialize $this->content properly to avoid strict warning
+
 [2013112000]
 - convert calls to deprecated get_context_instance() to context_xxx::instance()
 - fix javascript to work with 2.6, catch errors to avoid breaking the page' script
