@@ -33,7 +33,7 @@ $del_preconfirm      = optional_param('del_preconfirm', 0, PARAM_BOOL);
 $del_confirm         = optional_param('del_confirm', 0, PARAM_BOOL);
 
 // check capability
-$context = get_context_instance(CONTEXT_BLOCK, $instance_id);
+$context = context_block::instance($instance_id);
 require_capability('block/massaction:use', $context);
 
 
@@ -167,8 +167,8 @@ function print_deletion_confirmation($modules, $mode = 'preconfirm') {
             print_error('invalidcourseid');
         }
 
-        $context     = get_context_instance(CONTEXT_COURSE, $course->id);
-        $modcontext  = get_context_instance(CONTEXT_MODULE, $cm->id);
+        $context     = context_course::instance($course->id);
+        $modcontext  = context_module::instance($cm->id);
         require_capability('moodle/course:manageactivities', $context);
 
         $fullmodulename = get_string('modulename', $cm->modname);
@@ -242,8 +242,8 @@ function perform_deletion($modules) {
             print_error('invalidcourseid');
         }
 
-        $context     = get_context_instance(CONTEXT_COURSE, $course->id);
-        $modcontext  = get_context_instance(CONTEXT_MODULE, $cm->id);
+        $context     = context_course::instance($course->id);
+        $modcontext  = context_module::instance($cm->id);
         require_capability('moodle/course:manageactivities', $context);
 
         $modlib = $CFG->dirroot.'/mod/'.$cm->modname.'/lib.php';
@@ -255,34 +255,41 @@ function perform_deletion($modules) {
             print_error('modulemissingcode', '', '', $modlib);
         }
 
-        $deleteinstancefunction = $cm->modname."_delete_instance";
-
-        if (!$deleteinstancefunction($cm->instance)) {
-            echo $OUTPUT->notification("Could not delete the $cm->modname (instance)");
+        if (function_exists('course_delete_module')) {
+            // available from Moodle 2.5
+            course_delete_module($cm->id);
         }
+        else {
+            // pre Moodle 2.5
+            $deleteinstancefunction = $cm->modname."_delete_instance";
 
-        // remove all module files in case modules forget to do that
-        $fs = get_file_storage();
-        $fs->delete_area_files($modcontext->id);
+            if (!$deleteinstancefunction($cm->instance)) {
+                echo $OUTPUT->notification("Could not delete the $cm->modname (instance)");
+            }
 
-        if (!delete_course_module($cm->id)) {
-            echo $OUTPUT->notification("Could not delete the $cm->modname (coursemodule)");
+            // remove all module files in case modules forget to do that
+            $fs = get_file_storage();
+            $fs->delete_area_files($modcontext->id);
+
+            if (!delete_course_module($cm->id)) {
+                echo $OUTPUT->notification("Could not delete the $cm->modname (coursemodule)");
+            }
+            if (!delete_mod_from_section($cm->id, $cm->section)) {
+                echo $OUTPUT->notification("Could not delete the $cm->modname from that section");
+            }
+
+            // Trigger a mod_deleted event with information about this module.
+            $eventdata = new stdClass();
+            $eventdata->modulename = $cm->modname;
+            $eventdata->cmid       = $cm->id;
+            $eventdata->courseid   = $course->id;
+            $eventdata->userid     = $USER->id;
+            events_trigger('mod_deleted', $eventdata);
+
+            add_to_log($course->id, 'course', "delete mod",
+                       "view.php?id=$cm->course",
+                       "$cm->modname $cm->instance", $cm->id);
         }
-        if (!delete_mod_from_section($cm->id, $cm->section)) {
-            echo $OUTPUT->notification("Could not delete the $cm->modname from that section");
-        }
-
-        // Trigger a mod_deleted event with information about this module.
-        $eventdata = new stdClass();
-        $eventdata->modulename = $cm->modname;
-        $eventdata->cmid       = $cm->id;
-        $eventdata->courseid   = $course->id;
-        $eventdata->userid     = $USER->id;
-        events_trigger('mod_deleted', $eventdata);
-
-        add_to_log($course->id, 'course', "delete mod",
-                   "view.php?id=$cm->course",
-                   "$cm->modname $cm->instance", $cm->id);
     }
 }
 
@@ -309,7 +316,7 @@ function perform_moveto($modules, $target) {
             print_error('sectionnotexist', 'block_massaction');
         }
 
-        $context = get_context_instance(CONTEXT_COURSE, $section->course);
+        $context = context_course::instance($section->course);
         require_capability('moodle/course:manageactivities', $context);
 
         moveto_module($cm_record, $section);

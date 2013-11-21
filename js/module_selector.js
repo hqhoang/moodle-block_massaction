@@ -31,7 +31,11 @@ var module_selector = function() {
      */
     this.sections = {};
 
-    this.init();
+    try {
+        this.init();
+    }
+    catch(e) {
+    }
 };
 
 
@@ -85,8 +89,15 @@ module_selector.prototype.add_module_checkbox = function(section_number, module_
         // add the checkbox
         var box = Y.Node.create('<input type="checkbox" id="' + box_id + '" class="module_sector_checkbox" />');
 
-        // attach it to the command box
-        module_el.one('span.commands').appendChild(box);
+        // attach it to the command/action box
+        var control_box = module_el.one('span.commands');
+        if (control_box == null) {
+            control_box = module_el.one('span.actions');
+        }
+
+        if (control_box != null) {
+            control_box.appendChild(box);
+        }
     }
 
     // keep track in registry
