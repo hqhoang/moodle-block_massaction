@@ -15,6 +15,9 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2013112101]
+- merge Hebrew translation from Nadav Kavalerchik (nadavkav) 
+
 [2013112100]
 - initialize $this->content properly to avoid strict warning
 
