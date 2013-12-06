@@ -1,5 +1,6 @@
 <?php
 $string['pluginname'] = 'Mass action block';
+$string['massaction:addinstance'] = 'Add a new Mass Actions block';
 $string['massaction:use'] = 'Use the Mass Actions block';
 $string['blockname'] = 'Mass Actions';
 $string['blocktitle'] = 'Mass Actions';
