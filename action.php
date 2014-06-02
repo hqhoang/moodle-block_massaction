@@ -255,41 +255,7 @@ function perform_deletion($modules) {
             print_error('modulemissingcode', '', '', $modlib);
         }
 
-        if (function_exists('course_delete_module')) {
-            // available from Moodle 2.5
-            course_delete_module($cm->id);
-        }
-        else {
-            // pre Moodle 2.5
-            $deleteinstancefunction = $cm->modname."_delete_instance";
-
-            if (!$deleteinstancefunction($cm->instance)) {
-                echo $OUTPUT->notification("Could not delete the $cm->modname (instance)");
-            }
-
-            // remove all module files in case modules forget to do that
-            $fs = get_file_storage();
-            $fs->delete_area_files($modcontext->id);
-
-            if (!delete_course_module($cm->id)) {
-                echo $OUTPUT->notification("Could not delete the $cm->modname (coursemodule)");
-            }
-            if (!delete_mod_from_section($cm->id, $cm->section)) {
-                echo $OUTPUT->notification("Could not delete the $cm->modname from that section");
-            }
-
-            // Trigger a mod_deleted event with information about this module.
-            $eventdata = new stdClass();
-            $eventdata->modulename = $cm->modname;
-            $eventdata->cmid       = $cm->id;
-            $eventdata->courseid   = $course->id;
-            $eventdata->userid     = $USER->id;
-            events_trigger('mod_deleted', $eventdata);
-
-            add_to_log($course->id, 'course', "delete mod",
-                       "view.php?id=$cm->course",
-                       "$cm->modname $cm->instance", $cm->id);
-        }
+        course_delete_module($cm->id);
     }
 }
 
