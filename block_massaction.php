@@ -122,7 +122,7 @@ EOB;
 </a>
 EOB;
             }
-
+            $this->content->text .= html_writer::empty_tag('br');
             $this->content->text .= <<< EOB
 <select id="mod-massaction-control-section-list-moveto">
 	<option value="">{$str['action_movetosection']}</option>
