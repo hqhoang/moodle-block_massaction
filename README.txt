@@ -15,6 +15,11 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2015022700]
+- Renamed README to README.txt
+- Added $plugin->component for Moodle 3.0 compatibility
+- Changed $plugin->release to an actual version number
+
 [2014081900]
 - merge lang string from Skylar Kelty (sk-unikent)
 - Cosmetic change to move drop-down to new line
