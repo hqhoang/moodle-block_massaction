@@ -34,6 +34,7 @@ $del_confirm         = optional_param('del_confirm', 0, PARAM_BOOL);
 
 // check capability
 $context = context_block::instance($instance_id);
+$PAGE->set_context($context);
 require_capability('block/massaction:use', $context);
 
 
