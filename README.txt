@@ -1,12 +1,12 @@
-This is the Mass Actions block for Moodle 2. Its appearance and behaviors are largely the same as the version for Moodle 1.9.
+This is the Mass Actions block for Moodle 2.4 and up. Its appearance and behaviors are largely the same as the version for Moodle 1.9.
 
 Created at University of Minnesota by the Custom Solutions team.
 
 To install using git, type this command in the root of your Moodle install
-    git clone git://github.com/jmarthaler/moodle-block_massaction.git blocks/massaction
+    git clone git@github.com:at-tools/moodle-block_massaction.git 
 
 Alternatively, download the zip from
-    https://github.com/jmarthaler/moodle-block_massaction/zipball/master
+    https://github.com/at-tools/moodle-block_massaction/zipball/master
 unzip it into the blocks folder, and then rename the new folder to massaction.
 
 
