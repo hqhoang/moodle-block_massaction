@@ -1,4 +1,5 @@
-This is the Mass Actions block for Moodle 2.4 and up. Its appearance and behaviors are largely the same as the version for Moodle 1.9.
+This is the Mass Actions block for Moodle 2.4 and up. Its appearance and behaviors
+are largely the same as the version for Moodle 1.9.
 
 Created at University of Minnesota by the Custom Solutions team.
 
@@ -19,6 +20,11 @@ RELEASE NOTE
 - Renamed README to README.txt
 - Added $plugin->component for Moodle 3.0 compatibility
 - Changed $plugin->release to an actual version number
+- Updated course formats for which this plugin is available to include all of:
+    Flexible Sections, Collapsed Topics, Topics, and Weekly.
+    **If you use a course format not listed and feel it should be able to use
+    the Mass Actions block, please let me know and I will install your course
+    format plugin and test this block with that format.
 
 [2014081900]
 - merge lang string from Skylar Kelty (sk-unikent)
