@@ -36,11 +36,7 @@ class block_massaction extends block_base {
      * @see block_base::applicable_formats()
      */
     function applicable_formats() {
-<<<<<<< HEAD
-	return array('course-view' => true, 'mod' => false, 'tag' => false);
-=======
-        return array('course-view' => true, 'mod' => false, 'tag' => false);
->>>>>>> 2c7889bfeab856f4c2e61cff0846c55caad64ebf
+	    return array('course-view' => true, 'mod' => false, 'tag' => false);
     }
 
 
