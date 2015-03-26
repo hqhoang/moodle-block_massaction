@@ -16,6 +16,10 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2015032600]
+- Updated applicable_formats() to allow any course format, while still
+  preventing plugins and tags from using this block (sharpchi)
+
 [2015022700]
 - Renamed README to README.txt
 - Added $plugin->component for Moodle 3.0 compatibility
