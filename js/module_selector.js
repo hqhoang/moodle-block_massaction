@@ -87,7 +87,7 @@ module_selector.prototype.add_module_checkbox = function(section_number, module_
     // avoid creating duplicate checkboxes (in case sharing the library)
     if (Y.one('#' + 'box_id') == null) {
         // add the checkbox
-        var box = Y.Node.create('<input type="checkbox" id="' + box_id + '" class="module_sector_checkbox" />');
+        var box = Y.Node.create('<input type="checkbox" id="' + box_id + '" class="module_selector_checkbox" />');
 
         // attach it to the command/action box
         var control_box = module_el.one('span.commands');
