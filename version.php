@@ -1,6 +1,6 @@
 <?php
 $plugin->component = 'block_massaction'; // Required in Moodle 3.0
-$plugin->version = 2015032600;  // YYYYMMDDHH (year, month, day, 24-hr time)
+$plugin->version = 2015091400;  // YYYYMMDDHH (year, month, day, 24-hr time)
 $plugin->requires = 2012110900; // YYYYMMDDHH (This is the release version for Moodle 2.0)
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v1.1.3';
+$plugin->release = 'v1.1.4';
