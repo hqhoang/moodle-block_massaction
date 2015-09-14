@@ -174,7 +174,7 @@ M.block_massaction.submit_action = function(action) {
         for (var i = 0; i < sections[sec_id].length; i++) {
             var checkbox = document.getElementById(sections[sec_id][i].box_id);
 
-            if (checkbox.checked) {
+            if (checkbox !== null && checkbox.checked) {
                 // extract the module ID
                 var name_comps = sections[sec_id][i].module_id.split('-');
                 submit_data.module_ids.push(name_comps[name_comps.length - 1]);
