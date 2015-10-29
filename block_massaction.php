@@ -73,7 +73,8 @@ class block_massaction extends block_base {
                     array('section', 'block_massaction'),
                     array('section_zero', 'block_massaction'),
                     array('selecttarget', 'block_massaction'),
-                    array('noitemselected', 'block_massaction')
+                    array('noitemselected', 'block_massaction'),
+                    array('confirmation', 'block_massaction')
                 )
             );
 
