@@ -16,6 +16,9 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2015120100]
+- Merge a deletion confirmation prompt from Rex Lorenzo (rlorenzo)
+
 [2015091400]
 - Improved checkbox processing to make it more robust, in case there are non-input
   elements with an id matching the expected pattern
