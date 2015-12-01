@@ -198,6 +198,11 @@ M.block_massaction.submit_action = function(action) {
 
         case 'delete':
             // confirm
+            var numItems = submit_data.module_ids.length;
+            if (!confirm(M.util.get_string('confirmation', 'block_massaction', numItems))) {
+                return false;
+            }
+
             break;
 
         case 'moveto':

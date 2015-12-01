@@ -29,8 +29,7 @@ $string['section_zero'] = 'General';
 $string['selecttarget'] = 'Please select a target section to move items to';
 $string['noitemselected'] = 'Please select at least one item to apply the mass-action';
 
-
-
+$string['confirmation'] = 'Are you sure you want to delete {$a} items?';
 $string['noaction'] = 'No action specified';
 $string['invalidaction'] = 'Unknown action: {$a}';
 $string['invalidmoduleid'] = 'Invalid module ID: {$a}';
