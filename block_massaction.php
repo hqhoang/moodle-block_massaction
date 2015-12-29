@@ -103,8 +103,8 @@ EOB;
 
             // print the action links
             $action_icons = array(
-                'moveleft'     => 't/left',
-                'moveright'    => 't/right',
+                'moveleft'     => (right_to_left() == 'ltr') ? 't/right' : 't/left',
+                'moveright'    => (right_to_left() == 'ltr') ? 't/left' : 't/right',
                 'hide'         => 't/show',
                 'show'         => 't/hide',
                 'delete'       => 't/delete'
