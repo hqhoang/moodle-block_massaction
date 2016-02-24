@@ -15,12 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    blocks
- * @subpackage massaction
+ * @package    block_massaction
  * @copyright  2013 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 
 class block_massaction extends block_base {
 
@@ -31,7 +29,6 @@ class block_massaction extends block_base {
         $this->title = get_string('blocktitle', 'block_massaction');
     }
 
-
     /**
      * @see block_base::applicable_formats()
      */
@@ -39,14 +36,12 @@ class block_massaction extends block_base {
 	    return array('course-view' => true, 'mod' => false, 'tag' => false);
     }
 
-
     /**
      * no need to have multiple blocks to perform the same functionality
      */
     function instance_allow_multiple() {
         return false;
     }
-
 
     /**
      * @see block_base::get_content()
@@ -102,7 +97,7 @@ class block_massaction extends block_base {
 {$str['withselected']}:
 EOB;
 
-            // print the action links
+            // Print the action links.
             $action_icons = array(
                 'moveleft'     => 't/left',
                 'moveright'    => 't/right',

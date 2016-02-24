@@ -15,8 +15,7 @@
 
 /**
  *
- * @package    blocks
- * @subpackage massaction
+ * @package    block_massaction
  * @copyright  2011 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -33,13 +32,9 @@ var module_selector = function() {
 
     try {
         this.init();
-    }
-    catch(e) {
+    } catch(e) {
     }
 };
-
-
-
 
 /**
  * add checkboxes to all sections
@@ -51,16 +46,16 @@ module_selector.prototype.add_checkboxes = function() {
     var section = Y.one('#section-0');
 
     while (section) {
-        // add the section to the registry
+        // Add the section to the registry.
         self.sections[section_number] = [];
 
-        // find all LI with class 'activity' or 'resource'
+        // Find all LI with class 'activity' or 'resource'.
         var LIs = section.all('li.activity');
 
         LIs.each(function(module_el) {
             var module_id = module_el.getAttribute('id');
 
-            // verify if it's a module container
+            // Verify if it's a module container.
             if (module_id == null || module_id.substring(0, 7) != 'module-') {
                 return false;
             }
@@ -68,12 +63,10 @@ module_selector.prototype.add_checkboxes = function() {
             self.add_module_checkbox(section_number, module_el);
         });
 
-        section_number++;  // advance the loop
+        section_number++;  // Advance the loop.
         section = Y.one('#section-' + section_number);
     }
 };
-
-
 
 /**
  * add a checkbox to a module element
@@ -84,12 +77,12 @@ module_selector.prototype.add_module_checkbox = function(section_number, module_
     var module_id = module_el.getAttribute('id');
     var box_id = 'module_selector-' + module_id;
 
-    // avoid creating duplicate checkboxes (in case sharing the library)
+    // Avoid creating duplicate checkboxes (in case sharing the library).
     if (Y.one('#' + 'box_id') == null) {
-        // add the checkbox
+        // Add the checkbox.
         var box = Y.Node.create('<input type="checkbox" id="' + box_id + '" class="module_selector_checkbox" />');
 
-        // attach it to the command/action box
+        // Attach it to the command/action box.
         var control_box = module_el.one('span.commands');
         if (control_box == null) {
             control_box = module_el.one('span.actions');
@@ -100,7 +93,7 @@ module_selector.prototype.add_module_checkbox = function(section_number, module_
         }
     }
 
-    // keep track in registry
+    // Keep track in registry.
     self.sections[section_number].push({
         'module_id'   : module_id,
         'box_id'      : box_id

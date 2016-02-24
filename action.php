@@ -15,12 +15,10 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package    blocks
- * @subpackage massaction
+ * @package    block_massaction
  * @copyright  2011 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 
 require('../../config.php');
 
@@ -32,24 +30,24 @@ $return_url          = required_param('return_url', PARAM_TEXT);
 $del_preconfirm      = optional_param('del_preconfirm', 0, PARAM_BOOL);
 $del_confirm         = optional_param('del_confirm', 0, PARAM_BOOL);
 
-// check capability
+// Check capability.
 $context = context_block::instance($instance_id);
 $PAGE->set_context($context);
 require_capability('block/massaction:use', $context);
 
-
-// parse the submitted data
+// Parse the submitted data.
 $data = json_decode($massaction_request);
 
-// verify that the submitted module IDs do belong to the course
+// Verify that the submitted module IDs do belong to the course.
 if (!is_array($data->module_ids) || count($data->module_ids) == 0)
     print_error('missingparam', 'block_massaction', 'Module ID');
 
 $module_records = $DB->get_records_select('course_modules',
-                                          'ID IN (' . implode(',', array_fill(0, count($data->module_ids), '?')) . ')',
-                                          $data->module_ids);
+                                          'ID IN (' .
+                                          implode(',', array_fill(0, count($data->module_ids), '?'))
+                                          . ')', $data->module_ids);
 
-$courses_to_rebuild = array();    // keep track of courses to rebuild cache
+$courses_to_rebuild = array();    // Keep track of courses to rebuild cache.
 
 foreach ($data->module_ids as $mod_id) {
     if (!isset($module_records[$mod_id])) {
@@ -62,7 +60,7 @@ foreach ($data->module_ids as $mod_id) {
 if (!isset($data->action))
     print_error('noaction', 'block_massaction');
 
-// dispatch the submitted action
+// Dispatch the submitted action.
 switch ($data->action) {
     case 'moveleft':
     case 'moveright':
@@ -79,11 +77,9 @@ switch ($data->action) {
     case 'delete':
         if ( !$del_preconfirm ) {
             print_deletion_confirmation($module_records, 'preconfirm');
-        }
-        else if ( !$del_confirm ) {
+        } else if ( !$del_confirm ) {
             print_deletion_confirmation($module_records, 'confirm');
-        }
-        else {
+        } else {
             perform_deletion($module_records);
         }
         break;
@@ -99,22 +95,21 @@ switch ($data->action) {
         print_error('invalidaction', 'block_massaction', $data->action);
 }
 
-// rebuild course cache
+// Rebuild course cache.
 foreach ($courses_to_rebuild as $course_id => $nada) {
     rebuild_course_cache($course_id);
 }
 
-// redirect back to the previous page
+// Redirect back to the previous page.
 redirect($return_url);
-
-
-
-
 
 /**
  * helper function to perform indentation/outdentation
+ *
  * @param array $modules list of module records to modify
  * @param int $amount, 1 for indent, -1 for outdent
+ *
+ * @return void
  */
 function adjust_indentation($modules, $amount) {
     global $DB;
@@ -130,12 +125,13 @@ function adjust_indentation($modules, $amount) {
     }
 }
 
-
-
 /**
  * helper function to set visibility
+ *
  * @param array $modules list of module records to modify
  * @param bool $visible true to show, false to hide
+ *
+ * @return void
  */
 function set_visibility($modules, $visible) {
     global $DB, $CFG;
@@ -147,12 +143,13 @@ function set_visibility($modules, $visible) {
     }
 }
 
-
-
 /**
  * print out the list of course-modules to be deleted for confirmation
+ *
  * @param array $modules
  * @param string $mode either 'preconfirm' or 'confirm'
+ *
+ * @return void
  */
 function print_deletion_confirmation($modules, $mode = 'preconfirm') {
     global $DB, $PAGE, $OUTPUT, $CFG, $massaction_request, $instance_id, $return_url;
@@ -179,7 +176,7 @@ function print_deletion_confirmation($modules, $mode = 'preconfirm') {
 
     $options_yes = array('del_preconfirm'  => 1,
                          'instance_id'     => $instance_id,
-                         'return_url'    => $return_url,
+                         'return_url'      => $return_url,
                          'request'         => $massaction_request);
 
     if ($mode == 'confirm') {
@@ -199,11 +196,10 @@ function print_deletion_confirmation($modules, $mode = 'preconfirm') {
     $PAGE->navbar->add($str_del_check);
     echo $OUTPUT->header();
 
-    // prep the content
+    // Prep the content.
     if ($mode == 'preconfirm') {
         $content = get_string('deletecheckpreconfirm', 'block_massaction');
-    }
-    else {
+    } else {
         $content = get_string('deletecheckconfirm', 'block_massaction');
     }
 
@@ -223,11 +219,12 @@ function print_deletion_confirmation($modules, $mode = 'preconfirm') {
     exit;
 }
 
-
-
 /**
  * perform the actual deletion of the selected course modules
+ *
  * @param array $modules
+ *
+ * @return void
  */
 function perform_deletion($modules) {
     global $CFG, $OUTPUT, $DB, $USER;
@@ -251,30 +248,29 @@ function perform_deletion($modules) {
 
         if (file_exists($modlib)) {
             require_once($modlib);
-        }
-        else {
+        } else {
             print_error('modulemissingcode', '', '', $modlib);
         }
 
         if (function_exists('course_delete_module')) {
-            // available from Moodle 2.5
+            // Available from Moodle 2.5.
             course_delete_module($cm->id);
-        }
-        else {
-            // pre Moodle 2.5
+        } else {
+            // Pre Moodle 2.5.
             $deleteinstancefunction = $cm->modname."_delete_instance";
 
             if (!$deleteinstancefunction($cm->instance)) {
                 echo $OUTPUT->notification("Could not delete the $cm->modname (instance)");
             }
 
-            // remove all module files in case modules forget to do that
+            // Remove all module files in case modules forget to do that.
             $fs = get_file_storage();
             $fs->delete_area_files($modcontext->id);
 
             if (!delete_course_module($cm->id)) {
                 echo $OUTPUT->notification("Could not delete the $cm->modname (coursemodule)");
             }
+
             if (!delete_mod_from_section($cm->id, $cm->section)) {
                 echo $OUTPUT->notification("Could not delete the $cm->modname from that section");
             }
@@ -294,13 +290,13 @@ function perform_deletion($modules) {
     }
 }
 
-
-
-
 /**
- * perform the actual deletion of the selected course modules
+ * perform the actual relocation of the selected course modules
+ *
  * @param array $modules
  * @param int $target ID of the section to move to
+ *
+ * @return void
  */
 function perform_moveto($modules, $target) {
     global $CFG, $DB;
@@ -312,7 +308,7 @@ function perform_moveto($modules, $target) {
             print_error('invalidcoursemodule');
         }
 
-        // verify target
+        // Verify target section.
         if (!$section = $DB->get_record('course_sections', array('course' => $cm->course, 'section' => $target))) {
             print_error('sectionnotexist', 'block_massaction');
         }
@@ -323,4 +319,3 @@ function perform_moveto($modules, $target) {
         moveto_module($cm_record, $section);
     }
 }
-
