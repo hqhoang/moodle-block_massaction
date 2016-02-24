@@ -19,7 +19,9 @@ $string['action_hide'] = 'Masquer';
 $string['action_show'] = 'Montrer';
 $string['action_delete'] = 'Supprimer';
 $string['action_moveto'] = 'Déplacer';
+$string['action_dupto'] = 'Dupliquer';
 $string['action_movetosection'] = 'Déplacer dans la section :';
+$string['action_duptosection'] = 'Dupliquer dans la section :';
 
 $string['week'] = 'S';
 $string['topic'] = 'Section';

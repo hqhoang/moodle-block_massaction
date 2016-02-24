@@ -83,7 +83,8 @@ class block_massaction extends block_base {
             	'allitems'              => get_string('allitems', 'block_massaction'),
             	'deselectall'           => get_string('deselectall', 'block_massaction'),
                 'withselected'	        => get_string('withselected', 'block_massaction'),
-                'action_movetosection'	=> get_string('action_movetosection', 'block_massaction')
+                'action_movetosection'	=> get_string('action_movetosection', 'block_massaction'),
+                'action_duptosection'	=> get_string('action_duptosection', 'block_massaction')
             );
 
             $this->content->text  = <<< EOB
@@ -104,7 +105,8 @@ EOB;
                 'hide'         => 't/show',
                 'show'         => 't/hide',
                 'delete'       => 't/delete'
-                //'moveto'     => 't/move'
+                //'moveto'     => 't/move',
+                //'dupto'      => 't/duplicate'
             );
 
             foreach ($action_icons as $action => $icon_path) {
@@ -123,7 +125,9 @@ EOB;
 <select id="mod-massaction-control-section-list-moveto">
 	<option value="">{$str['action_movetosection']}</option>
 </select>
-
+<select id="mod-massaction-control-section-list-dupto">
+	<option value="">{$str['action_duptosection']}</option>
+</select>
 <form id="mod-massaction-control-form" name="mod-massaction-control-form" action="{$CFG->wwwroot}/blocks/massaction/action.php" method="POST">
 	<input type="hidden" id="mod-massaction-control-request" name="request" value="">
 	<input type="hidden" id="mod-massaction-instance_id" name="instance_id" value="{$this->instance->id}">

@@ -91,6 +91,13 @@ switch ($data->action) {
         perform_moveto($module_records, $data->moveto_target);
         break;
 
+    case 'dupto':
+        if (!isset($data->dupto_target)) {
+            print_error('missingparam', 'block_massaction', 'dupto_target');
+        }
+        perform_dupto($module_records, $data->dupto_target);
+        break;
+
     default:
         print_error('invalidaction', 'block_massaction', $data->action);
 }
@@ -317,5 +324,40 @@ function perform_moveto($modules, $target) {
         require_capability('moodle/course:manageactivities', $context);
 
         moveto_module($cm_record, $section);
+    }
+}
+
+/**
+ * Perform the duplication of the selected course modules
+ *
+ * @param array $modules
+ * @param int $target ID of the section to move to
+ *
+ * @return void
+ */
+function perform_dupto($modules, $target) {
+    global $CFG, $DB;
+
+    require_once($CFG->dirroot.'/course/lib.php');
+
+    foreach ($modules as $cm_record) {
+        // Check for all possible failure conditions before doing actual work.
+        if (!$cm = get_coursemodule_from_id('', $cm_record->id, 0, true)) {
+            print_error('invalidcoursemodule');
+        }
+
+        // Verify target section.
+        if (!$section = $DB->get_record('course_sections', array('course' => $newcm->course, 'section' => $target))) {
+            print_error('sectionnotexist', 'block_massaction');
+        }
+
+        $context = context_course::instance($section->course);
+        require_capability('moodle/course:manageactivities', $context);
+
+        // No failures and we possess the required capability. Duplicate the module.
+        $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
+        $newcm = duplicate_module($course, $cm);
+
+        moveto_module($newcm, $section);
     }
 }

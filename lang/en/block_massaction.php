@@ -20,7 +20,9 @@ $string['action_hide'] = 'Hide';
 $string['action_show'] = 'Show';
 $string['action_delete'] = 'Delete';
 $string['action_moveto'] = 'Move to';
+$string['action_dupto'] = 'Duplicate to';
 $string['action_movetosection'] = 'Move to section';
+$string['action_duptosection'] = 'Duplicate to section';
 
 $string['week'] = 'W';
 $string['topic'] = 'Topic';

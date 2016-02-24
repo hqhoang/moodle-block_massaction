@@ -16,6 +16,9 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2016022400]
+- Add 'Duplicate to' functionality from Matt Davidson (syxton)
+
 [2015120100]
 - Merge a deletion confirmation prompt from Rex Lorenzo (rlorenzo)
 

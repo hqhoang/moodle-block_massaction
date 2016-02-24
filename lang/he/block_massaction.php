@@ -19,7 +19,9 @@ $string['action_hide'] = 'הסתרה';
 $string['action_show'] = 'הצגה';
 $string['action_delete'] = 'מחיקה';
 $string['action_moveto'] = 'הסטה';
+$string['action_dupto'] = 'עתק של';
 $string['action_movetosection'] = 'הסטה ליחידת־הוראה';
+$string['action_duptosection'] = 'שכפל לסעיף';
 
 $string['week'] = 'שבועי';
 $string['topic'] = 'יחידת־הוראה';
