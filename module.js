@@ -84,6 +84,11 @@ M.block_massaction.init = function(Y, data) {
         section_option.text     = section_text;
         section_option.value    = section_number;
         section_moveto.options[section_moveto.options.length] = section_option;
+
+        // Add to dup-to-section.
+        var section_option      = document.createElement('option');
+        section_option.text     = section_text;
+        section_option.value    = section_number;
         section_dupto.options[section_dupto.options.length] = section_option;
     }
 

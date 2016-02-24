@@ -347,7 +347,7 @@ function perform_dupto($modules, $target) {
         }
 
         // Verify target section.
-        if (!$section = $DB->get_record('course_sections', array('course' => $newcm->course, 'section' => $target))) {
+        if (!$section = $DB->get_record('course_sections', array('course' => $cm->course, 'section' => $target))) {
             print_error('sectionnotexist', 'block_massaction');
         }
 
