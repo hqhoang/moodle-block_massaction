@@ -16,6 +16,10 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2016030400]
+- Fix bug with Flexible Sections course format where multiple checkboxes would be
+  displayed for each activity in a sub-section
+
 [2016022400]
 - Add 'Duplicate to' functionality from Matt Davidson (syxton)
 

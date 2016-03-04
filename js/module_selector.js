@@ -78,7 +78,7 @@ module_selector.prototype.add_module_checkbox = function(section_number, module_
     var box_id = 'module_selector-' + module_id;
 
     // Avoid creating duplicate checkboxes (in case sharing the library).
-    if (Y.one('#' + 'box_id') == null) {
+    if (Y.one('#' + box_id) == null) {
         // Add the checkbox.
         var box = Y.Node.create('<input type="checkbox" id="' + box_id + '" class="module_selector_checkbox" />');
 
