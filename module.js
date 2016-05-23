@@ -54,6 +54,8 @@ M.block_massaction.init = function(Y, data) {
 
             if (sectionname_node != null) {
                 var section_text = sectionname_node.get('text');
+            } else if (Y.one('div.single-section')) { // Check for single section view.
+                var section_text = Y.one('div.single-section h3.sectionname').get('text');
             } else {
                 // Determine the option text depending on course format.
                 switch (data.course_format) {
