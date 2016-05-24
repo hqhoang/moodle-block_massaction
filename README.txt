@@ -18,7 +18,7 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 RELEASE NOTE
 [2016052300]
 - Fix bug with Topics/Weekly formats when Course Layout is set to 'Show one section
-  per page'
+  per page' from Matt Davidson (syxton)
 
 [2016030400]
 - Fix bug with Flexible Sections course format where multiple checkboxes would be
