@@ -16,6 +16,8 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2016052401]
+- Moved the string displayed when Javascript is disabled into the language file.
 [2016052400]
 - Enabled the block to inform the user, when Javascript is disabled, that Javascript
   is required in order to use the block

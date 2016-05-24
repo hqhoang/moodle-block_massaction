@@ -43,16 +43,15 @@ $string['deletecheckconfirm'] = 'Etes-vous VRAIMENT sûr de vouloir supprimer le
 $string['sectionnotexist'] = 'La section cible n\'existe pas';
 $string['missingparam'] = 'Erreur de code : il manque le paramètre JSON "{$a}"';
 
-$string['usage_help'] = <<< EOB
-<p></p>
-<p> Ce bloc permet aux enseignants d'effectuer des actions sur les ressources multiples ou des activités dans l'espace de cours, plutôt que d'avoir à effectuer des actions répétées sur des éléments individuels. </p>
-<p> Pour utiliser ce bloc, Javascript doit être activé dans votre navigateur, vous devez être en mode édition dans la page d'accueil du cours. Seuls les cours au format HEBDOMADAIRE ou THEMATIQUE sont pris en charge. </p>
+$string['usage_help'] = '<p>Ce bloc permet aux enseignants d\'effectuer des actions sur les ressources multiples ou des activités dans l\'espace de cours, plutôt que d\'avoir à effectuer des actions répétées sur des éléments individuels.</p>
+<p>Pour utiliser ce bloc, Javascript doit être activé dans votre navigateur, vous devez être en mode édition dans la page d\'accueil du cours. Seuls les cours au format HEBDOMADAIRE ou THEMATIQUE sont pris en charge. </p>
 <p>Les actions prises en charge sont : <br>
 <ul>
 <li>la suppression en lot</li>
 <li>le masquage en lot</li>
-<li>l'affichage en lot</li>
+<li>l\'affichage en lot</li>
 <li>le déplacement en lot</li>
 </ul>
-Pour sélectionner un élément pour y effectuer une action, il suffit de cliquer sur la case à droite de celui-ci sur la page du cours, ou vous pouvez sélectionner tous les éléments, ou sélectionner tous les éléments dans une section à l'aide du bloc. Pour effectuer une action, cliquez sur l'action que vous souhaitez effectuer à l'intérieur du bloc. </p>
-EOB;
+Pour sélectionner un élément pour y effectuer une action, il suffit de cliquer sur la case à droite de celui-ci sur la page du cours, ou vous pouvez sélectionner tous les éléments, ou sélectionner tous les éléments dans une section à l\'aide du bloc. Pour effectuer une action, cliquez sur l\'action que vous souhaitez effectuer à l\'intérieur du bloc.</p>';
+
+$string['jsdisabled'] = 'Vous devez activer JavaScript pour utiliser ce bloc.';

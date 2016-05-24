@@ -87,8 +87,9 @@ class block_massaction extends block_base {
                 'action_duptosection'	=> get_string('action_duptosection', 'block_massaction')
             );
 
+            $jsdisabled = get_string('jsdisabled', 'block_massaction');
             $this->content->text  = <<< EOB
-<div class="block_massaction_jsdisabled">You must enable Javascript to use this block.</div>
+<div class="block_massaction_jsdisabled">{$jsdisabled}</div>
 <div class="block_massaction_jsenabled hidden">
     <a id="mod-massaction-control-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
     <select id="mod-massaction-control-section-list-select">
