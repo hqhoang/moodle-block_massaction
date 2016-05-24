@@ -4,7 +4,7 @@ are largely the same as the version for Moodle 1.9.
 Created at University of Minnesota by the Custom Solutions team.
 
 To install using git, type this command in the root of your Moodle install
-    git clone git@github.com:at-tools/moodle-block_massaction.git 
+    git clone git@github.com:at-tools/moodle-block_massaction.git
 
 Alternatively, download the zip from
     https://github.com/at-tools/moodle-block_massaction/zipball/master
@@ -16,6 +16,10 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2016052400]
+- Enabled the block to inform the user, when Javascript is disabled, that Javascript
+  is required in order to use the block
+
 [2016052300]
 - Fix bug with Topics/Weekly formats when Course Layout is set to 'Show one section
   per page' from Matt Davidson (syxton)
@@ -53,7 +57,7 @@ RELEASE NOTE
 - Cosmetic change to move drop-down to new line
 
 [2013112101]
-- merge Hebrew translation from Nadav Kavalerchik (nadavkav) 
+- merge Hebrew translation from Nadav Kavalerchik (nadavkav)
 
 [2013112100]
 - initialize $this->content properly to avoid strict warning

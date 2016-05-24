@@ -88,14 +88,15 @@ class block_massaction extends block_base {
             );
 
             $this->content->text  = <<< EOB
-<!--Select item one-by-one or:<br/-->
-<a id="mod-massaction-control-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
-<select id="mod-massaction-control-section-list-select">
-	<option value="all">{$str['allitems']}</option>
-</select>
-<a id="mod-massaction-control-deselectall" href="javascript:void(0);">{$str['deselectall']}</a><br/><br/>
+<div class="block_massaction_jsdisabled">You must enable Javascript to use this block.</div>
+<div class="block_massaction_jsenabled hidden">
+    <a id="mod-massaction-control-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
+    <select id="mod-massaction-control-section-list-select">
+    	<option value="all">{$str['allitems']}</option>
+    </select>
+    <a id="mod-massaction-control-deselectall" href="javascript:void(0);">{$str['deselectall']}</a><br/><br/>
 
-{$str['withselected']}:
+    {$str['withselected']}:
 EOB;
 
             // Print the action links.
@@ -114,26 +115,27 @@ EOB;
                 $action_text = get_string('action_'.$action, 'block_massaction');
 
                 $this->content->text .= <<< EOB
-<br/>
-<a id="mod-massaction-action-{$action}" class="massaction-action" href="javascript:void(0);">
-	<img src="{$pix_path}" alt="{$action_text}" title="{$action_text}"/>&nbsp;{$action_text}
-</a>
+    <br/>
+    <a id="mod-massaction-action-{$action}" class="massaction-action" href="javascript:void(0);">
+    	<img src="{$pix_path}" alt="{$action_text}" title="{$action_text}"/>&nbsp;{$action_text}
+    </a>
 EOB;
             }
             $this->content->text .= html_writer::empty_tag('br');
             $this->content->text .= <<< EOB
-<select id="mod-massaction-control-section-list-moveto">
-	<option value="">{$str['action_movetosection']}</option>
-</select>
-<select id="mod-massaction-control-section-list-dupto">
-	<option value="">{$str['action_duptosection']}</option>
-</select>
-<form id="mod-massaction-control-form" name="mod-massaction-control-form" action="{$CFG->wwwroot}/blocks/massaction/action.php" method="POST">
-	<input type="hidden" id="mod-massaction-control-request" name="request" value="">
-	<input type="hidden" id="mod-massaction-instance_id" name="instance_id" value="{$this->instance->id}">
-	<input type="hidden" id="mod-massaction-return_url" name="return_url" value="{$_SERVER['REQUEST_URI']}">
-</form>
-<div id="mod-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
+    <select id="mod-massaction-control-section-list-moveto">
+    	<option value="">{$str['action_movetosection']}</option>
+    </select>
+    <select id="mod-massaction-control-section-list-dupto">
+    	<option value="">{$str['action_duptosection']}</option>
+    </select>
+    <form id="mod-massaction-control-form" name="mod-massaction-control-form" action="{$CFG->wwwroot}/blocks/massaction/action.php" method="POST">
+    	<input type="hidden" id="mod-massaction-control-request" name="request" value="">
+    	<input type="hidden" id="mod-massaction-instance_id" name="instance_id" value="{$this->instance->id}">
+    	<input type="hidden" id="mod-massaction-return_url" name="return_url" value="{$_SERVER['REQUEST_URI']}">
+    </form>
+    <div id="mod-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
+</div>
 EOB;
         }
 
