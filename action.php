@@ -78,9 +78,9 @@ switch ($data->action) {
 
     case 'delete':
         if ( !$deletepreconfirm ) {
-            print_deletion_confirmation($modulerecords, 'preconfirm');
+            print_deletion_confirmation($modulerecords, $massactionrequest, $instanceid, $returnurl, 'preconfirm');
         } else if ( !$deleteconfirm ) {
-            print_deletion_confirmation($modulerecords, 'confirm');
+            print_deletion_confirmation($modulerecords, $massactionrequest, $instanceid, $returnurl, 'confirm');
         } else {
             perform_deletion($modulerecords);
         }
@@ -160,8 +160,8 @@ function set_visibility($modules, $visible) {
  *
  * @return void
  */
-function print_deletion_confirmation($modules, $mode = 'preconfirm') {
-    global $DB, $PAGE, $OUTPUT, $CFG, $massactionrequest, $instanceid, $returnurl;
+function print_deletion_confirmation($modules, $massactionrequest, $instanceid, $returnurl, $mode = 'preconfirm') {
+    global $DB, $PAGE, $OUTPUT, $CFG;
 
     $modulelist = array();
 
