@@ -1,4 +1,4 @@
-This is the Mass Actions block for Moodle 2.4 and up. Its appearance and behaviors
+This is the Mass Actions block for Moodle 2.8 and up. Its appearance and behaviors
 are largely the same as the version for Moodle 1.9.
 
 Created at University of Minnesota by the Custom Solutions team.
