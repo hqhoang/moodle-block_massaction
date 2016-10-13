@@ -35,7 +35,7 @@ M.block_massaction.init = function(Y, data) {
     var self = this;
     this.Y = Y;        // Keep a ref to YUI instance.
 
-    var mod_sel  = new module_selector();
+    var mod_sel  = new Module_selector();
 
     var sections = mod_sel.get_section_structure();
     M.block_massaction.sections = sections;
@@ -44,31 +44,32 @@ M.block_massaction.init = function(Y, data) {
     var section_selector = document.getElementById('mod-massaction-control-section-list-select');
     var section_moveto   = document.getElementById('mod-massaction-control-section-list-moveto');
     var section_dupto    = document.getElementById('mod-massaction-control-section-list-dupto');
+    var section_text = '';
 
     for (var section_number in sections) {
-        if (section_number == 0) {    // General/first section.
-            var section_text = M.util.get_string('section_zero', 'block_massaction');
+        if (section_number === '0') {    // General/first section.
+            section_text = M.util.get_string('section_zero', 'block_massaction');
         } else {
             // Find the section name.
             var sectionname_node = Y.one('#section-' + section_number + ' h3.sectionname');
 
-            if (sectionname_node != null) {
-                var section_text = sectionname_node.get('text');
+            if (sectionname_node !== null) {
+                section_text = sectionname_node.get('text');
             } else if (Y.one('div.single-section')) { // Check for single section view.
-                var section_text = Y.one('div.single-section h3.sectionname').get('text');
+                section_text = Y.one('div.single-section h3.sectionname').get('text');
             } else {
                 // Determine the option text depending on course format.
                 switch (data.course_format) {
                     case 'weeks':
-                         var section_text = M.util.get_string('week', 'block_massaction') + ' ' + section_number;
+                         section_text = M.util.get_string('week', 'block_massaction') + ' ' + section_number;
                          break;
 
                     case 'topics':
-                         var section_text = M.util.get_string('topic', 'block_massaction') + ' ' + section_number;
+                         section_text = M.util.get_string('topic', 'block_massaction') + ' ' + section_number;
                          break;
 
                     default:
-                         var section_text = M.util.get_string('section', 'block_massaction') + ' ' + section_number;
+                         section_text = M.util.get_string('section', 'block_massaction') + ' ' + section_number;
                          break;
                 }
             }
@@ -78,51 +79,51 @@ M.block_massaction.init = function(Y, data) {
         var section_option      = document.createElement('option');
         section_option.text     = section_text;
         section_option.value    = section_number;
-        section_option.disabled = sections[section_number].length == 0; //If has no module to select.
+        section_option.disabled = sections[section_number].length === 0; // If has no module to select.
         section_selector.options[section_selector.options.length] = section_option;
 
         // Add to move-to-section.
-        var section_option      = document.createElement('option');
+        section_option          = document.createElement('option');
         section_option.text     = section_text;
         section_option.value    = section_number;
         section_moveto.options[section_moveto.options.length] = section_option;
 
         // Add to dup-to-section.
-        var section_option      = document.createElement('option');
+        section_option          = document.createElement('option');
         section_option.text     = section_text;
         section_option.value    = section_number;
         section_dupto.options[section_dupto.options.length] = section_option;
     }
 
     // Attach event handler for the controls.
-    Y.on('change', function(e) { self.set_section_selection(true); },
+    Y.on('change', function() { self.set_section_selection(true); },
          '#mod-massaction-control-section-list-select');
 
-    Y.on('click', function(e) { self.set_section_selection(true, 'all'); },
+    Y.on('click', function() { self.set_section_selection(true, 'all'); },
          '#mod-massaction-control-selectall');
 
-    Y.on('click', function(e) { self.set_section_selection(false, 'all'); },
+    Y.on('click', function() { self.set_section_selection(false, 'all'); },
          '#mod-massaction-control-deselectall');
 
-    Y.on('click', function(e) { self.submit_action('moveleft'); },
+    Y.on('click', function() { self.submit_action('moveleft'); },
          '#mod-massaction-action-moveleft');
 
-    Y.on('click', function(e) { self.submit_action('moveright'); },
+    Y.on('click', function() { self.submit_action('moveright'); },
          '#mod-massaction-action-moveright');
 
-    Y.on('click', function(e) { self.submit_action('hide'); },
+    Y.on('click', function() { self.submit_action('hide'); },
          '#mod-massaction-action-hide');
 
-    Y.on('click', function(e) { self.submit_action('show'); },
+    Y.on('click', function() { self.submit_action('show'); },
          '#mod-massaction-action-show');
 
-    Y.on('click', function(e) { self.submit_action('delete'); },
+    Y.on('click', function() { self.submit_action('delete'); },
          '#mod-massaction-action-delete');
 
-    Y.on('change', function(e) { self.submit_action('moveto'); },
+    Y.on('change', function() { self.submit_action('moveto'); },
         '#mod-massaction-control-section-list-moveto');
 
-    Y.on('change', function(e) { self.submit_action('dupto'); },
+    Y.on('change', function() { self.submit_action('dupto'); },
         '#mod-massaction-control-section-list-dupto');
 };
 
@@ -138,16 +139,16 @@ M.block_massaction.set_section_selection = function(value, section_number) {
     var box_ids  = [];
 
     // See if we are toggling all sections.
-    if (typeof section_number != 'undefined' && section_number == 'all') {
+    if (typeof section_number !== 'undefined' && section_number === 'all') {
         for (var sec_id in sections) {
             for (var  j = 0; j < sections[sec_id].length; j++) {
                 box_ids.push(sections[sec_id][j].box_id);
             }
         }
     } else {
-        var section_number = document.getElementById('mod-massaction-control-section-list-select').value;
+        section_number = document.getElementById('mod-massaction-control-section-list-select').value;
 
-        if (section_number != 'all') {
+        if (section_number !== 'all') {
             for (var i = 0; i < sections[section_number].length; i++) {
                 box_ids.push(sections[section_number][i].box_id);
             }
@@ -155,8 +156,8 @@ M.block_massaction.set_section_selection = function(value, section_number) {
     }
 
     // Un/check the boxes.
-    for (var i = 0; i < box_ids.length; i++) {
-        document.getElementById(box_ids[i]).checked = value;
+    for (var k = 0; k < box_ids.length; k++) {
+        document.getElementById(box_ids[k]).checked = value;
     }
 };
 
@@ -172,7 +173,7 @@ M.block_massaction.set_section_selection = function(value, section_number) {
  */
 M.block_massaction.submit_action = function(action) {
     var submit_data = {'action'        : action,
-                       'module_ids'    : []};
+        'module_ids'    : []};
 
     var sections = M.block_massaction.sections;
 
@@ -190,7 +191,7 @@ M.block_massaction.submit_action = function(action) {
     }
 
     // Verify that at least one checkbox is checked.
-    if (submit_data.module_ids.length == 0) {
+    if (submit_data.module_ids.length === 0) {
         alert(M.util.get_string('noitemselected', 'block_massaction'));
         return false;
     }
@@ -214,7 +215,7 @@ M.block_massaction.submit_action = function(action) {
         case 'moveto':
             // Get the target section.
             submit_data.moveto_target = document.getElementById('mod-massaction-control-section-list-moveto').value;
-            if (submit_data.moveto_target.replace(/ /g, '') == '') {
+            if (submit_data.moveto_target.replace(/ /g, '') === '') {
                 return false;
             }
             break;
@@ -222,17 +223,17 @@ M.block_massaction.submit_action = function(action) {
         case 'dupto':
             // Get the target section.
             submit_data.dupto_target = document.getElementById('mod-massaction-control-section-list-dupto').value;
-            if (submit_data.dupto_target.replace(/ /g, '') == '') {
+            if (submit_data.dupto_target.replace(/ /g, '') === '') {
                 return false;
             }
             break;
 
         default:
-          alert('Unknown action: ' + action + '. Coding error.');
-          return false;
+            alert('Unknown action: ' + action + '. Coding error.');
+            return false;
     }
 
     // Set the form value and submit.
     document.getElementById('mod-massaction-control-request').value = this.Y.JSON.stringify(submit_data);
     document.getElementById('mod-massaction-control-form').submit();
-}
+};

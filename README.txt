@@ -16,6 +16,9 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2016101300]
+- Integrate with Travis CI and fix errors and warnings
+
 [2016101000]
 - Fixed a regression created when I added the Javascript-disabled functionality
   that caused checkboxes not to be drawn in Flexible Sections formatted courses

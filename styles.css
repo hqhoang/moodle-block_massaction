@@ -1,8 +1,8 @@
 #mod-massaction-control-section-list-select {width: 99%;}
-#mod-massaction-control-section-list-moveto {max-width: 95%; margin-left: 0.5em;}
-#mod-massaction-control-section-list-dupto {max-width: 95%; margin-left: 0.5em;}
-#mod-massaction-control-deselectlist {postion:relative;float:right;}
-.block_massaction .massaction-action {position: relative; margin-left: 0.5em;}
-#mod-massaction-help-icon {text-align:center; padding:0.2em;}
+#mod-massaction-control-section-list-moveto {margin-left: 0.5em; max-width: 95%;}
+#mod-massaction-control-section-list-dupto {margin-left: 0.5em; max-width: 95%;}
+#mod-massaction-control-deselectlist {float:right; position:relative;}
+.block_massaction .massaction-action {margin-left: 0.5em; position: relative;}
+#mod-massaction-help-icon {padding:0.2em; text-align:center;}
 
 #block_massaction_module_list th {padding-bottom:0.1em;}
