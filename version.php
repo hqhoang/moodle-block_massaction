@@ -17,7 +17,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_massaction'; // Required in Moodle 3.0.
-$plugin->version = 2016101301;  // YYYYMMDDXX (year, month, day, increment).
+$plugin->version = 2016111500;  // YYYYMMDDXX (year, month, day, increment).
 $plugin->requires = 2014111000; // YYYYMMDDXX (This is the release version for Moodle 2.8).
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v2.0.0';
+$plugin->release = 'v2.0.1';

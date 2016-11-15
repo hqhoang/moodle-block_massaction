@@ -16,6 +16,10 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2016111500]
+- Remove h3 tag requirement from module.js so Mass Actions will work with themes
+  that use non-h3 tags for section headings, from Dan Davis (rndme)
+
 [2016101301]
 - Enable compatibility with OneTopic course format
 - Bump version to 2.0.0 to signal this has diverged from the version of this

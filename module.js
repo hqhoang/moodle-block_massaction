@@ -73,12 +73,12 @@ M.block_massaction.init = function(Y, data) {
                 section_text = M.util.get_string('section_zero', 'block_massaction');
             } else {
                 // Find the section name.
-                var sectionname_node = Y.one('#section-' + section_number + ' h3.sectionname');
+                var sectionname_node = Y.one('#section-' + section_number + ' .sectionname');
 
                 if (sectionname_node !== null) {
                     section_text = sectionname_node.get('text');
                 } else if (Y.one('div.single-section')) { // Check for single section view.
-                    section_text = Y.one('div.single-section h3.sectionname').get('text');
+                    section_text = Y.one('div.single-section .sectionname').get('text');
                 } else {
                     // Determine the option text depending on course format.
                     switch (data.course_format) {
