@@ -51,22 +51,15 @@ M.block_massaction.init = function(Y, data) {
     for (var section_number in sections) {
         if (data.course_format === 'onetopic') {
             // OneTopic format requires special treatment.
-            // All its sections are named 'Topic X', where X is the section number.
-            section_text = M.util.get_string('topic', 'block_massaction') + ' ' + section_number;
+            section_text = sections[section_number][0];
 
-            // Check that we have a div with the class tab_position_X.
-            if (Y.one('div.tab_position_' + section_number)) {
-                // Get its grandparent node so we can check if this is the active section.
-                var parentnode = Y.one('div.tab_position_' + section_number).get('parentNode').get('parentNode');
-
-                if (parentnode.get('className') === 'active') {
-                    /* This is used later to restrict the 'Select all in section'
-                     * drop menu to just the active section. This is done because
-                     * only the active section has any modules in the DOM in the
-                     * OneTopic course format.
-                     */
-                    active_section = section_number;
-                }
+            if (sections[section_number][section_text] === 'active') {
+                /* This is used later to restrict the 'Select all in section'
+                 * drop menu to just the active section. This is done because
+                 * only the active section has any modules in the DOM in the
+                 * OneTopic course format.
+                 */
+                active_section = section_number;
             }
         } else {
             if (section_number === '0') {    // General/first section.
@@ -187,7 +180,9 @@ M.block_massaction.set_section_selection = function(value, section_number) {
 
     // Un/check the boxes.
     for (var k = 0; k < box_ids.length; k++) {
-        document.getElementById(box_ids[k]).checked = value;
+        if (typeof box_ids[k] !== 'undefined') {
+            document.getElementById(box_ids[k]).checked = value;
+        }
     }
 };
 

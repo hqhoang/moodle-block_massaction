@@ -54,14 +54,18 @@ Module_selector.prototype.add_checkboxes = function() {
         self.add_section(section_number);
     } else if (Y.one('div.onetopic')) {
         var ulist = Y.one('ul.nav-tabs').get('children');
-        var childtext = '';
+        var childclass = '';
         ulist.each(function(ulist_child) {
-            childtext = ulist_child.get('innerText');
-            if (childtext !== '') {
-                childtext = childtext.split(' ');
-                section_number = childtext[1];
-                self.add_section(section_number, 'onetopic');
+            childclass = ulist_child.get('className');
+
+            if (childclass === '') {
+                childclass = 'inactive';
             }
+
+            if (ulist_child.get('innerText') !== '') {
+                self.add_section(section_number, 'onetopic', ulist_child.get('innerText'), childclass);
+            }
+            section_number += 1;
         });
     } else {
         var sections = Y.all('li.section');
@@ -76,18 +80,22 @@ Module_selector.prototype.add_checkboxes = function() {
 /**
  * add section to array
  */
-Module_selector.prototype.add_section = function(section_number, parentclass) {
+Module_selector.prototype.add_section = function(section_number, parentclass, innertext, childclass) {
     var self = this;
     var LIs = '';
 
-    // Add the section to the registry.
-    self.sections[section_number] = [];
-
     if (parentclass === 'onetopic') {
+        // Add the section to the registry.
+        self.sections[section_number] = [innertext];
+        self.sections[section_number][innertext] = childclass;
+
         if (Y.one('#section-' + section_number)) {
             LIs = Y.one('div.content ul').all('li');
         }
     } else {
+        // Add the section to the registry.
+        self.sections[section_number] = [];
+
         // Find all LI with class 'activity' or 'resource'.
         LIs = Y.one('#section-' + section_number).all('li.activity');
     }

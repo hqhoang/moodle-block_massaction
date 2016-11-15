@@ -1,4 +1,4 @@
-This is the Mass Actions block for Moodle 2.8 and up. Its appearance and behaviors
+This is the Mass Actions block for Moodle 3.0 to 3.2. Its appearance and behaviors
 are largely the same as the version for Moodle 1.9.
 
 Created at University of Minnesota by the Custom Solutions team.
@@ -16,6 +16,12 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2016111501]
+- Fix bug with OneTopic format compatibility where, if the topics were not named
+  'Topic X' (where X is an integer greater than -1), the block would be unusable
+  because it would not draw checkboxes next to modules and would not correctly
+  populate all of its drop menus
+
 [2016111500]
 - Remove h3 tag requirement from module.js so Mass Actions will work with themes
   that use non-h3 tags for section headings, from Dan Davis (rndme)
