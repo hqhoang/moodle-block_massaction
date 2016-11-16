@@ -47,12 +47,7 @@ Module_selector.prototype.add_checkboxes = function() {
 
     var section_number = 0;
 
-    if (Y.one('div.single-section') && !Y.one('div.onetopic')) {
-        self.add_section(section_number);
-        var id = Y.one('div.single-section li').get('id').split('-'); // Get the single section id.
-        section_number = id[1];
-        self.add_section(section_number);
-    } else if (Y.one('div.onetopic')) {
+    if (Y.one('div.onetopic')) {
         var ulist = Y.one('ul.nav-tabs').get('children');
         var isactive = false;
         var innertext = '';
