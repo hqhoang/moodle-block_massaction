@@ -16,6 +16,11 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+=======
+[2016111600]
+- Improved the code that supports the OneTopic format, making it less reliant on
+  properties the user can change
+
 [2016111502]
 - Change required Moodle version to 3.2 (2016102700)
 - Bump plugin version to 4.0.0 to signify this is not compatible with earlier

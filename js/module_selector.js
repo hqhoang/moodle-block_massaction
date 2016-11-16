@@ -54,18 +54,27 @@ Module_selector.prototype.add_checkboxes = function() {
         self.add_section(section_number);
     } else if (Y.one('div.onetopic')) {
         var ulist = Y.one('ul.nav-tabs').get('children');
-        var childclass = '';
+        var isactive = false;
+        var innertext = '';
         ulist.each(function(ulist_child) {
-            childclass = ulist_child.get('className');
+            innertext = ulist_child.get('innerText');
 
-            if (childclass === '') {
-                childclass = 'inactive';
+            if (ulist_child.hasClass('active')) {
+                isactive = true;
             }
 
-            if (ulist_child.get('innerText') !== '') {
-                self.add_section(section_number, 'onetopic', ulist_child.get('innerText'), childclass);
+            /*
+             * We have to check if innertext is an empty string because the + and - icons
+             * in the navbar are included as children in the get() from line 56. Their
+             * innerText property is an empty string. So, this makes a good way to
+             * exclude them from our list of topics.
+             */
+            if (innertext !== '') {
+                self.add_section(section_number, 'onetopic', innertext, isactive);
             }
+
             section_number += 1;
+            isactive = false;
         });
     } else {
         var sections = Y.all('li.section');
@@ -80,14 +89,13 @@ Module_selector.prototype.add_checkboxes = function() {
 /**
  * add section to array
  */
-Module_selector.prototype.add_section = function(section_number, parentclass, innertext, childclass) {
+Module_selector.prototype.add_section = function(section_number, parentclass, innertext, isactive) {
     var self = this;
     var LIs = '';
 
     if (parentclass === 'onetopic') {
         // Add the section to the registry.
-        self.sections[section_number] = [innertext];
-        self.sections[section_number][innertext] = childclass;
+        self.sections[section_number] = {'innertext': innertext, 'isactive': isactive, modules: []};
 
         if (Y.one('#section-' + section_number)) {
             LIs = Y.one('div.content ul').all('li');
@@ -143,7 +151,7 @@ Module_selector.prototype.add_module_checkbox = function(section_number, module_
     }
 
     // Keep track in registry.
-    self.sections[section_number].push({
+    self.sections[section_number].modules.push({
         'module_id'   : module_id,
         'box_id'      : box_id
     });

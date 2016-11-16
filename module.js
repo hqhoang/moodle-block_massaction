@@ -51,9 +51,9 @@ M.block_massaction.init = function(Y, data) {
     for (var section_number in sections) {
         if (data.course_format === 'onetopic') {
             // OneTopic format requires special treatment.
-            section_text = sections[section_number][0];
+            section_text = sections[section_number].innertext;
 
-            if (sections[section_number][section_text] === 'active') {
+            if (sections[section_number].isactive) {
                 /* This is used later to restrict the 'Select all in section'
                  * drop menu to just the active section. This is done because
                  * only the active section has any modules in the DOM in the
@@ -164,16 +164,16 @@ M.block_massaction.set_section_selection = function(value, section_number) {
     // See if we are toggling all sections.
     if (typeof section_number !== 'undefined' && section_number === 'all') {
         for (var sec_id in sections) {
-            for (var  j = 0; j < sections[sec_id].length; j++) {
-                box_ids.push(sections[sec_id][j].box_id);
+            for (var  j = 0; j < sections[sec_id].modules.length; j++) {
+                box_ids.push(sections[sec_id].modules[j].box_id);
             }
         }
     } else {
         section_number = document.getElementById('mod-massaction-control-section-list-select').value;
 
         if (section_number !== 'all') {
-            for (var i = 0; i < sections[section_number].length; i++) {
-                box_ids.push(sections[section_number][i].box_id);
+            for (var i = 0; i < sections[section_number].modules.length; i++) {
+                box_ids.push(sections[section_number].modules[i].box_id);
             }
         }
     }
@@ -204,12 +204,12 @@ M.block_massaction.submit_action = function(action) {
 
     // Get the checked box IDs.
     for (var sec_id in sections) {
-        for (var i = 0; i < sections[sec_id].length; i++) {
-            var checkbox = document.getElementById(sections[sec_id][i].box_id);
+        for (var i = 0; i < sections[sec_id].modules.length; i++) {
+            var checkbox = document.getElementById(sections[sec_id].modules[i].box_id);
 
             if (checkbox !== null && checkbox.checked) {
                 // Extract the module ID.
-                var name_comps = sections[sec_id][i].module_id.split('-');
+                var name_comps = sections[sec_id].modules[i].module_id.split('-');
                 submit_data.module_ids.push(name_comps[name_comps.length - 1]);
             }
         }
