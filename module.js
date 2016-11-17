@@ -99,7 +99,7 @@ M.block_massaction.init = function(Y, data) {
             section_option      = document.createElement('option');
             section_option.text     = section_text;
             section_option.value    = section_number;
-            section_option.disabled = sections[section_number].length === 0; // If has no module to select.
+            section_option.disabled = sections[section_number].modules.length === 0; // If has no module to select.
             section_selector.options[section_selector.options.length] = section_option;
         }
 

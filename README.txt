@@ -16,7 +16,11 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
-=======
+[2016111700]
+- Updated the documentation for this.sections in js/module_selector.js
+- Overlooked adding '.modules' to one line of code checking whether any
+  modules have been added for a section
+
 [2016111600]
 - Improved the code that supports the OneTopic format, making it less reliant on
   properties the user can change

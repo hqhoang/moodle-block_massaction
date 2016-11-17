@@ -24,9 +24,12 @@
  * a class that handles inserting checkboxes to the course sections
  */
 var Module_selector = function() {
-    /* a registry of checkbox IDs, of the format:
-     *  'section_number' => [{'module_id'   : <module-ID>,
-     *                       'box_id'       : <checkbox_id>}]
+    /*
+     * A registry consisting of an object having a modules property that
+     * is an array of objects each having a box_id and module_id property
+     * which values are the CSS ids for the checkbox and its corresponding
+     * activity module, respectively. This registry may also have other
+     * properties depending on the course format.
      */
     this.sections = {};
 
