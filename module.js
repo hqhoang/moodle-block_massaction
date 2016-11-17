@@ -35,6 +35,7 @@ M.block_massaction.init = function(Y, data) {
     var self = this;
     this.Y = Y;        // Keep a ref to YUI instance.
 
+    /* globals Module_selector */
     var mod_sel  = new Module_selector();
 
     var sections = mod_sel.get_section_structure();
@@ -215,7 +216,7 @@ M.block_massaction.submit_action = function(action) {
 
     // Verify that at least one checkbox is checked.
     if (submit_data.module_ids.length === 0) {
-        alert(M.util.get_string('noitemselected', 'block_massaction'));
+        window.alert(M.util.get_string('noitemselected', 'block_massaction'));
         return false;
     }
 
@@ -230,7 +231,7 @@ M.block_massaction.submit_action = function(action) {
         case 'delete':
             // Confirm.
             var numItems = submit_data.module_ids.length;
-            if (!confirm(M.util.get_string('confirmation', 'block_massaction', numItems))) {
+            if (!window.confirm(M.util.get_string('confirmation', 'block_massaction', numItems))) {
                 return false;
             }
             break;
@@ -252,7 +253,7 @@ M.block_massaction.submit_action = function(action) {
             break;
 
         default:
-            alert('Unknown action: ' + action + '. Coding error.');
+            window.alert('Unknown action: ' + action + '. Coding error.');
             return false;
     }
 

@@ -38,7 +38,7 @@ var Module_selector = function() {
     } catch(e) {
         // If there's an error, print it to the console. If the user knows to look
         // there, then they can share that information with us.
-        console.log(e);
+        window.console.log(e);
     }
 };
 
