@@ -27,8 +27,8 @@ require_login();
 $instanceid         = required_param('instance_id', PARAM_INT);
 $massactionrequest  = required_param('request', PARAM_TEXT);
 $returnurl          = required_param('return_url', PARAM_TEXT);
-$deletepreconfirm      = optional_param('del_preconfirm', 0, PARAM_BOOL);
-$deleteconfirm         = optional_param('del_confirm', 0, PARAM_BOOL);
+$deletepreconfirm   = optional_param('del_preconfirm', 0, PARAM_BOOL);
+$deleteconfirm      = optional_param('del_confirm', 0, PARAM_BOOL);
 
 // Check capability.
 $context = context_block::instance($instanceid);
@@ -79,10 +79,8 @@ switch ($data->action) {
     case 'delete':
         if ( !$deletepreconfirm ) {
             print_deletion_confirmation($modulerecords, $massactionrequest, $instanceid, $returnurl, 'preconfirm');
-        } else if ( !$deleteconfirm ) {
-            print_deletion_confirmation($modulerecords, $massactionrequest, $instanceid, $returnurl, 'confirm');
         } else {
-            perform_deletion($modulerecords);
+            perform_deletion($modulerecords, $returnurl);
         }
         break;
 
@@ -109,8 +107,18 @@ foreach ($rebuildcourses as $courseid => $nada) {
     rebuild_course_cache($courseid);
 }
 
-// Redirect back to the previous page.
-redirect($returnurl);
+/*
+ * If we're doing anything other than attempting to delete activities, then redirecting here is
+ * appropriate. This is because if we redirect before we rebuild the course cache, then some of
+ * our actions (particularly indent/outdent) may not take effect or be reflected on the page.
+ *
+ * If we are trying to delete, then redirecting here is not appropriate because trying to do so
+ * throws errors on the confirmation page. Instead, we need to redirect after we've actually
+ * deleted the selected item(s).
+ */
+if ($data->action != 'delete') {
+    redirect($returnurl);
+}
 
 /**
  * helper function to perform indentation/outdentation
@@ -207,8 +215,6 @@ function print_deletion_confirmation($modules, $massactionrequest, $instanceid, 
     // Prep the content.
     if ($mode == 'preconfirm') {
         $content = get_string('deletecheckpreconfirm', 'block_massaction');
-    } else {
-        $content = get_string('deletecheckconfirm', 'block_massaction');
     }
 
     $content .= '<table id="block_massaction_module_list"><thead><th>Module name</th><th>Module type</th></thead><tbody>';
@@ -236,7 +242,7 @@ function print_deletion_confirmation($modules, $massactionrequest, $instanceid, 
  *
  * @return void
  */
-function perform_deletion($modules) {
+function perform_deletion($modules, $returnurl) {
     global $CFG, $OUTPUT, $DB, $USER;
 
     require_once($CFG->dirroot.'/course/lib.php');
@@ -298,6 +304,8 @@ function perform_deletion($modules) {
                        "$cm->modname $cm->instance", $cm->id);
         }
     }
+
+    redirect($returnurl);
 }
 
 /**

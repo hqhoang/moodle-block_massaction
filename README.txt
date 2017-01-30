@@ -16,6 +16,11 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2017013000]
+- Removed one of the non-Javascript deletion confirmation steps
+- Corrected call to redirect() when attempting to delete activities to prevent errors being
+  thrown on deletion confirmation page
+
 [2016111700]
 - Updated the documentation for this.sections in js/module_selector.js
 - Overlooked adding '.modules' to one line of code checking whether any
