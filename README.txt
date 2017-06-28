@@ -16,6 +16,9 @@ Once installed, capability "block/massaction:use" needs to be added to the roles
 
 
 RELEASE NOTE
+[2017062800]
+- Fix Boost theme bug that caused checkboxes not to display (lbroda)
+
 [2017013100]
 - Fix Travis-CI jshint errors when running builds
 
