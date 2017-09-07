@@ -15,29 +15,24 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['pluginname'] = 'Mass action block';
-$string['massaction:addinstance'] = 'Add a new Mass Actions block';
 $string['massaction:use'] = 'Use the Mass Actions block';
 $string['blockname'] = 'Mass Actions';
 $string['blocktitle'] = 'Mass Actions';
 $string['usage'] = 'Mass Actions Help';
 
-$string['select'] = 'Select';
 $string['selectall'] = 'Select all';
 $string['itemsin'] = 'items in';
 $string['allitems'] = 'Select all in section:';
-$string['deselect'] = 'Deselect';
-$string['deselectall'] = 'Deselect all';
+$string['selectnone'] = 'Deselect all';
 $string['withselected'] = 'With selected';
 
-$string['action_moveleft'] = 'Outdent (move left)';
-$string['action_moveright'] = 'Indent (move right)';
+$string['action_outdent'] = 'Outdent (move left)';
+$string['action_indent'] = 'Indent (move right)';
 $string['action_hide'] = 'Hide';
 $string['action_show'] = 'Show';
 $string['action_delete'] = 'Delete';
-$string['action_moveto'] = 'Move to';
-$string['action_dupto'] = 'Duplicate to';
-$string['action_movetosection'] = 'Move to section';
-$string['action_duptosection'] = 'Duplicate to section';
+$string['action_move'] = 'Move to section';
+$string['action_clone'] = 'Duplicate to section';
 
 $string['week'] = 'W';
 $string['topic'] = 'Topic';
@@ -52,9 +47,6 @@ $string['invalidaction'] = 'Unknown action: {$a}';
 $string['invalidmoduleid'] = 'Invalid module ID: {$a}';
 $string['invalidcoursemodule'] = 'Invalid course module';
 $string['invalidcourseid'] = 'Invalid course ID';
-$string['deletecheck'] = 'Confirm mass deletion';
-$string['deletecheckpreconfirm'] = 'Are you sure you want to delete the following module(s)?';
-$string['deletecheckconfirm'] = 'Are you REALLY sure you want to delete the following module(s)?';
 $string['sectionnotexist'] = 'Target section does not exist';
 $string['missingparam'] = 'Error coding: missing required JSON param "{$a}"';
 

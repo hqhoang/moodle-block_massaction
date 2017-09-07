@@ -35,7 +35,19 @@ class block_massaction extends block_base {
      * @see block_base::applicable_formats()
      */
     public function applicable_formats() {
-        return array('course-view' => true, 'mod' => false, 'tag' => false);
+        global $COURSE;
+
+        /*
+         * If the course uses sections, then it will have modules Mass Actions can act on.
+         * If it doesn't, then it's very unlikely Mass Actions will be useful.
+         */
+        if (course_format_uses_sections($COURSE->format)) {
+            $allowed = true;
+        } else {
+            $allowed = false;
+        }
+
+        return array('course-view' => $allowed, 'mod' => false, 'tag' => false);
     }
 
     /**
@@ -49,7 +61,7 @@ class block_massaction extends block_base {
      * @see block_base::get_content()
      */
     public function get_content() {
-        global $CFG, $PAGE, $COURSE, $OUTPUT;
+        global $CFG, $COURSE, $OUTPUT, $PAGE;
 
         if ($this->content !== null) {
             return $this->content;
@@ -60,55 +72,46 @@ class block_massaction extends block_base {
         $this->content->footer = '';
 
         if ($PAGE->user_is_editing()) {
-            $jsmodule = array(
-                'name'         => 'block_massaction',
-                'fullpath'     => '/blocks/massaction/module.js',
-                'requires'     => array('base', 'io', 'node', 'json', 'event'),
-                'strings'      => array(
-                    array('week', 'block_massaction'),
-                    array('topic', 'block_massaction'),
-                    array('section', 'block_massaction'),
-                    array('section_zero', 'block_massaction'),
-                    array('selecttarget', 'block_massaction'),
-                    array('noitemselected', 'block_massaction'),
-                    array('confirmation', 'block_massaction')
-                )
-            );
+            $jsdata = $this->get_section_data($COURSE);
+            $jsdata['courseformat'] = $COURSE->format;
 
-            $PAGE->requires->js('/blocks/massaction/js/module_selector.js');
-            $PAGE->requires->js_init_call('M.block_massaction.init',
-                                          array(array('course_format' => $COURSE->format)), true, $jsmodule);
+            /*
+             * Have to cast $jsdata to an array, even though it's already an array, or the javascript
+             * acts like we only sent an array consisting of the id of the first section that has
+             * modules and the ids of its modules.
+             */
+            $PAGE->requires->js_call_amd('block_massaction/block_massaction', 'init', array($jsdata));
 
             $str = array(
-                'selectall'             => get_string('selectall', 'block_massaction'),
-                'itemsin'               => get_string('itemsin', 'block_massaction'),
-                'allitems'              => get_string('allitems', 'block_massaction'),
-                'deselectall'           => get_string('deselectall', 'block_massaction'),
-                'withselected'          => get_string('withselected', 'block_massaction'),
-                'action_movetosection'  => get_string('action_movetosection', 'block_massaction'),
-                'action_duptosection'   => get_string('action_duptosection', 'block_massaction')
+                'selectall'     => get_string('selectall', 'block_massaction'),
+                'itemsin'       => get_string('itemsin', 'block_massaction'),
+                'allitems'      => get_string('allitems', 'block_massaction'),
+                'selectnone'    => get_string('selectnone', 'block_massaction'),
+                'withselected'  => get_string('withselected', 'block_massaction'),
+                'action_move'   => get_string('action_move', 'block_massaction'),
+                'action_clone'  => get_string('action_clone', 'block_massaction')
             );
 
             $jsdisabled = get_string('jsdisabled', 'block_massaction');
             $this->content->text  = <<< EOB
-<div class="block_massaction_jsdisabled">{$jsdisabled}</div>
-<div class="block_massaction_jsenabled hidden">
-    <a id="mod-massaction-control-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
-    <select id="mod-massaction-control-section-list-select">
+<div class="block-massaction-jsdisabled">{$jsdisabled}</div>
+<div class="block-massaction-jsenabled hidden">
+    <a id="block-massaction-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
+    <select id="block-massaction-selectsome">
     	<option value="all">{$str['allitems']}</option>
     </select>
-    <a id="mod-massaction-control-deselectall" href="javascript:void(0);">{$str['deselectall']}</a><br/><br/>
+    <a id="block-massaction-selectnone" href="javascript:void(0);">{$str['selectnone']}</a><br/><br/>
 
     {$str['withselected']}:
 EOB;
 
             // Print the action links.
             $actionicons = array(
-                'moveleft'     => 't/left',
-                'moveright'    => 't/right',
-                'hide'         => 't/show',
-                'show'         => 't/hide',
-                'delete'       => 't/delete'
+                'outdent' => 't/left',
+                'indent'  => 't/right',
+                'hide'    => 't/show',
+                'show'    => 't/hide',
+                'delete'  => 't/delete'
             );
 
             foreach ($actionicons as $action => $iconpath) {
@@ -117,30 +120,70 @@ EOB;
 
                 $this->content->text .= <<< EOB
     <br/>
-    <a id="mod-massaction-action-{$action}" class="massaction-action" href="javascript:void(0);">
+    <a id="block-massaction-{$action}" class="massaction-action" href="javascript:void(0);">
     	<img src="{$pixpath}" alt="{$actiontext}" title="{$actiontext}"/>&nbsp;{$actiontext}
     </a>
 EOB;
             }
             $this->content->text .= html_writer::empty_tag('br');
             $this->content->text .= <<< EOB
-    <select id="mod-massaction-control-section-list-moveto">
-    	<option value="">{$str['action_movetosection']}</option>
+    <select id="block-massaction-move">
+    	<option value="">{$str['action_move']}</option>
     </select>
-    <select id="mod-massaction-control-section-list-dupto">
-    	<option value="">{$str['action_duptosection']}</option>
+    <select id="block-massaction-clone">
+    	<option value="">{$str['action_clone']}</option>
     </select>
-    <form id="mod-massaction-control-form" name="mod-massaction-control-form"
+    <form id="block-massaction-control-form" name="block-massaction-control-form"
             action="{$CFG->wwwroot}/blocks/massaction/action.php" method="POST">
-    	<input type="hidden" id="mod-massaction-control-request" name="request" value="">
-    	<input type="hidden" id="mod-massaction-instance_id" name="instance_id" value="{$this->instance->id}">
-    	<input type="hidden" id="mod-massaction-return_url" name="return_url" value="{$_SERVER['REQUEST_URI']}">
+        <input type="hidden" id="block-massaction-action" name="action" value="">
+        <input type="hidden" id="block-massaction-activities" name="activities" value="">
+        <input type="hidden" id="block-massaction-courseid" name="courseid" value="{$COURSE->id}">
+        <input type="hidden" id="block-massaction-format" name="format" value="{$COURSE->format}">
+        <input type="hidden" id="block-massaction-selected-section" name="selectedsection" value="all">
+        <input type="hidden" id="block-massaction-selected-all" name="selectedall" value="false">
+        <input type="hidden" id="block-massaction-target" name="target" value="">
+    	<input type="hidden" id="block-massaction-instance_id" name="instance_id" value="{$this->instance->id}">
+    	<input type="hidden" id="block-massaction-return_url" name="return_url" value="{$_SERVER['REQUEST_URI']}">
     </form>
-    <div id="mod-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
+    <div id="block-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
 </div>
 EOB;
         }
 
         return $this->content;
+    }
+
+    public function _self_test() {
+        return true;
+    }
+
+    /**
+     * Gets an array of section numbers and module/activity ids and an array of section numbers and
+     * their human-readable labels.
+     *
+     * @param object $course Course object
+     *
+     * @return array $jsdata Multi-dimensional array
+     */
+    private function get_section_data($course) {
+        global $DB;
+
+        // Get an array of section ids and their child module ids.
+        $modinfo = get_fast_modinfo($course);
+        $sectionmodules = $modinfo->get_sections();
+
+        // Get all section ids and their labels.
+        $sectionnames = array();
+        $allsections = $DB->get_records_sql('SELECT section FROM {course_sections} WHERE course=:courseid',
+            array('courseid' => $course->id));
+
+        foreach ($allsections as $section) {
+            $sectionname = get_section_name($course, $section->section);
+            $sectionnames[$section->section] = $sectionname;
+        }
+
+        $jsdata = array('sectionmodules' => $sectionmodules, 'sectionnames' => $sectionnames);
+
+        return $jsdata;
     }
 }

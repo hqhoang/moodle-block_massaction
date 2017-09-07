@@ -24,82 +24,86 @@ require('../../config.php');
 
 require_login();
 
-$instanceid         = required_param('instance_id', PARAM_INT);
-$massactionrequest  = required_param('request', PARAM_TEXT);
-$returnurl          = required_param('return_url', PARAM_TEXT);
-$deletepreconfirm   = optional_param('del_preconfirm', 0, PARAM_BOOL);
-$deleteconfirm      = optional_param('del_confirm', 0, PARAM_BOOL);
+// Parameters/arguments.
+$instanceid     = required_param('instance_id', PARAM_INT);
+$returnurl      = required_param('return_url', PARAM_TEXT);
+$action         = required_param('action', PARAM_TEXT);
+$activities     = required_param('activities', PARAM_RAW);
+$courseid       = required_param('courseid', PARAM_INT);
+$courseformat   = required_param('format', PARAM_TEXT);
+$selectedall    = required_param('selectedall', PARAM_BOOL);
+$section        = required_param('selectedsection', PARAM_TEXT);
+$target         = optional_param('target', 0, PARAM_INT);
 
 // Check capability.
 $context = context_block::instance($instanceid);
 $PAGE->set_context($context);
 require_capability('block/massaction:use', $context);
 
-// Parse the submitted data.
-$data = json_decode($massactionrequest);
+$activities = json_decode($activities);
+$numberofactivities = count($activities);
 
-// Verify that the submitted module IDs do belong to the course.
-if (!is_array($data->module_ids) || count($data->module_ids) == 0) {
+// Ensure we have an array of module ids and that we have at least one id.
+if (!is_array($activities) || $numberofactivities < 1) {
     print_error('missingparam', 'block_massaction', 'Module ID');
 }
 
-$modulerecords = $DB->get_records_select('course_modules',
-                                          'ID IN (' .
-                                          implode(',', array_fill(0, count($data->module_ids), '?'))
-                                          . ')', $data->module_ids);
+$modulerecords = $DB->get_records_select('course_modules', 'ID IN (' .
+                                          implode(',', array_fill(0, $numberofactivities, '?'))
+                                          . ')', $activities);
 
-$rebuildcourses = array();    // Keep track of courses to rebuild cache.
+// Keep track of courses to rebuild cache.
+$rebuildcourses = array();
 
-foreach ($data->module_ids as $modid) {
-    if (!isset($modulerecords[$modid])) {
-        print_error('invalidmoduleid', 'block_massaction', $modid);
+foreach ($activities as $activityid) {
+    if (!isset($modulerecords[$activityid])) {
+        print_error('invalidmoduleid', 'block_massaction', $activityid);
+    } else {
+        if (!array_key_exists($modulerecords[$activityid]->course, $rebuildcourses)) {
+            $rebuildcourses[$modulerecords[$activityid]->course] = true;
+        }
     }
-
-    $rebuildcourses[$modulerecords[$modid]->course] = true;
 }
 
-if (!isset($data->action)) {
+if (!isset($action)) {
     print_error('noaction', 'block_massaction');
 }
 
 // Dispatch the submitted action.
-switch ($data->action) {
-    case 'moveleft':
-    case 'moveright':
-        require_capability('moodle/course:manageactivities', $context);
-        adjust_indentation($modulerecords, $data->action == 'moveleft' ? -1 : 1);
+switch ($action) {
+    case 'outdent':
+    case 'indent':
+        adjust_indentation($modulerecords, $action == 'outdent' ? -1 : 1, $context);
         break;
 
     case 'hide':
     case 'show':
-        require_capability('moodle/course:activityvisibility', $context);
-        set_visibility($modulerecords, $data->action == 'show');
+        set_visibility($modulerecords, $action == 'show', $context);
         break;
 
     case 'delete':
-        if ( !$deletepreconfirm ) {
-            print_deletion_confirmation($modulerecords, $massactionrequest, $instanceid, $returnurl, 'preconfirm');
+        perform_deletion($modulerecords, $returnurl);
+        break;
+
+    case 'move':
+        if (!isset($target)) {
+            print_error('missingparam', 'block_massaction', 'target');
         } else {
-            perform_deletion($modulerecords, $returnurl);
+            move_module($modulerecords, $target);
         }
         break;
 
-    case 'moveto':
-        if (!isset($data->moveto_target)) {
-            print_error('missingparam', 'block_massaction', 'moveto_target');
+    case 'clone':
+        if (!isset($target)) {
+            print_error('missingparam', 'block_massaction', 'target');
+        } else {
+            clone_module($modulerecords, $target);
         }
-        perform_moveto($modulerecords, $data->moveto_target);
-        break;
-
-    case 'dupto':
-        if (!isset($data->dupto_target)) {
-            print_error('missingparam', 'block_massaction', 'dupto_target');
-        }
-        perform_dupto($modulerecords, $data->dupto_target);
         break;
 
     default:
         print_error('invalidaction', 'block_massaction', $data->action);
+        break;
 }
 
 // Rebuild course cache.
@@ -116,7 +120,7 @@ foreach ($rebuildcourses as $courseid => $nada) {
  * throws errors on the confirmation page. Instead, we need to redirect after we've actually
  * deleted the selected item(s).
  */
-if ($data->action != 'delete') {
+if ($action != 'delete') {
     redirect($returnurl);
 }
 
@@ -125,11 +129,14 @@ if ($data->action != 'delete') {
  *
  * @param array $modules list of module records to modify
  * @param int $amount, 1 for indent, -1 for outdent
+ * @param object $context
  *
  * @return void
  */
-function adjust_indentation($modules, $amount) {
+function adjust_indentation($modules, $amount, $context) {
     global $DB;
+
+    require_capability('moodle/course:manageactivities', $context);
 
     foreach ($modules as $cm) {
         $cm->indent += $amount;
@@ -147,92 +154,20 @@ function adjust_indentation($modules, $amount) {
  *
  * @param array $modules list of module records to modify
  * @param bool $visible true to show, false to hide
+ * @param object $context
  *
  * @return void
  */
-function set_visibility($modules, $visible) {
+function set_visibility($modules, $visible, $context) {
     global $CFG;
+
+    require_capability('moodle/course:activityvisibility', $context);
 
     require_once($CFG->dirroot.'/course/lib.php');
 
     foreach ($modules as $cm) {
         set_coursemodule_visible($cm->id, $visible);
     }
-}
-
-/**
- * print out the list of course-modules to be deleted for confirmation
- *
- * @param array $modules
- * @param string $mode either 'preconfirm' or 'confirm'
- *
- * @return void
- */
-function print_deletion_confirmation($modules, $massactionrequest, $instanceid, $returnurl, $mode = 'preconfirm') {
-    global $DB, $PAGE, $OUTPUT, $CFG;
-
-    $modulelist = array();
-
-    foreach ($modules as $modulerecord) {
-        if (!$cm = get_coursemodule_from_id('', $modulerecord->id, 0, true)) {
-            print_error('invalidcoursemodule');
-        }
-
-        if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
-            print_error('invalidcourseid');
-        }
-
-        $context     = context_course::instance($course->id);
-        require_capability('moodle/course:manageactivities', $context);
-
-        $fullmodulename = get_string('modulename', $cm->modname);
-
-        $modulelist[] = array($fullmodulename, $cm->name);
-    }
-
-    $optionsyes = array('del_preconfirm'  => 1,
-                         'instance_id'     => $instanceid,
-                         'return_url'      => $returnurl,
-                         'request'         => $massactionrequest);
-
-    if ($mode == 'confirm') {
-        $optionsyes['del_confirm'] = 1;
-    }
-
-    $optionsno  = array('id' => $cm->course);
-
-    $strdeletecheck = get_string('deletecheck', 'block_massaction');
-
-    require_login($course->id);
-
-    $PAGE->requires->css('/blocks/massaction/styles.css');
-    $PAGE->set_url(new moodle_url('/blocks/massaction/action.php'));
-    $PAGE->set_title($strdeletecheck);
-    $PAGE->set_heading($course->fullname);
-    $PAGE->navbar->add($strdeletecheck);
-    echo $OUTPUT->header();
-
-    // Prep the content.
-    if ($mode == 'preconfirm') {
-        $content = get_string('deletecheckpreconfirm', 'block_massaction');
-    }
-
-    $content .= '<table id="block_massaction_module_list"><thead><th>Module name</th><th>Module type</th></thead><tbody>';
-    foreach ($modulelist as $modulename) {
-        $content .= "<tr><td>{$modulename[1]}</td><td>{$modulename[0]}</td></tr>";
-    }
-    $content .= '</tbody></table>';
-
-    echo $OUTPUT->box_start('noticebox');
-    $continuebutton = new single_button(new moodle_url("{$CFG->wwwroot}/blocks/massaction/action.php", $optionsyes),
-                            get_string('delete'), 'post');
-    $cancelbutton   = new single_button(new moodle_url("{$CFG->wwwroot}/course/view.php?id={$course->id}", $optionsno),
-                            get_string('cancel'), 'get');
-    echo $OUTPUT->confirm($content, $continuebutton, $cancelbutton);
-    echo $OUTPUT->box_end();
-    echo $OUTPUT->footer();
-
-    return;
 }
 
 /**
@@ -243,21 +178,18 @@ function print_deletion_confirmation($modules, $massactionrequest, $instanceid, 
  * @return void
  */
 function perform_deletion($modules, $returnurl) {
-    global $CFG, $OUTPUT, $DB, $USER;
+    global $CFG, $DB;
 
     require_once($CFG->dirroot.'/course/lib.php');
 
     foreach ($modules as $modulerecord) {
-        if (!$cm = get_coursemodule_from_id('', $modulerecord->id, 0, true)) {
-            print_error('invalidcoursemodule');
-        }
+        $cm = validate_module($modulerecord->id);
 
         if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
             print_error('invalidcourseid');
         }
 
         $context     = context_course::instance($course->id);
-        $modcontext  = context_module::instance($cm->id);
         require_capability('moodle/course:manageactivities', $context);
 
         $modlib = $CFG->dirroot.'/mod/'.$cm->modname.'/lib.php';
@@ -268,41 +200,7 @@ function perform_deletion($modules, $returnurl) {
             print_error('modulemissingcode', '', '', $modlib);
         }
 
-        if (function_exists('course_delete_module')) {
-            // Available from Moodle 2.5.
-            course_delete_module($cm->id);
-        } else {
-            // Pre Moodle 2.5.
-            $deletefunction = $cm->modname."_delete_instance";
-
-            if (!$deletefunction($cm->instance)) {
-                echo $OUTPUT->notification("Could not delete the $cm->modname (instance)");
-            }
-
-            // Remove all module files in case modules forget to do that.
-            $fs = get_file_storage();
-            $fs->delete_area_files($modcontext->id);
-
-            if (!delete_course_module($cm->id)) {
-                echo $OUTPUT->notification("Could not delete the $cm->modname (coursemodule)");
-            }
-
-            if (!delete_mod_from_section($cm->id, $cm->section)) {
-                echo $OUTPUT->notification("Could not delete the $cm->modname from that section");
-            }
-
-            // Trigger a mod_deleted event with information about this module.
-            $eventdata = new stdClass();
-            $eventdata->modulename = $cm->modname;
-            $eventdata->cmid       = $cm->id;
-            $eventdata->courseid   = $course->id;
-            $eventdata->userid     = $USER->id;
-            events_trigger('mod_deleted', $eventdata);
-
-            add_to_log($course->id, 'course', "delete mod",
-                       "view.php?id=$cm->course",
-                       "$cm->modname $cm->instance", $cm->id);
-        }
+        course_delete_module($cm->id);
     }
 
     redirect($returnurl);
@@ -316,20 +214,16 @@ function perform_deletion($modules, $returnurl) {
  *
  * @return void
  */
-function perform_moveto($modules, $target) {
-    global $CFG, $DB;
+function move_module($modules, $target) {
+    global $CFG;
 
     require_once($CFG->dirroot.'/course/lib.php');
 
     foreach ($modules as $modulerecord) {
-        if (!$cm = get_coursemodule_from_id('', $modulerecord->id, 0, true)) {
-            print_error('invalidcoursemodule');
-        }
+        $cm = validate_module($modulerecord->id);
 
         // Verify target section.
-        if (!$section = $DB->get_record('course_sections', array('course' => $cm->course, 'section' => $target))) {
-            print_error('sectionnotexist', 'block_massaction');
-        }
+        $section = validate_section($cm->course, $target);
 
         $context = context_course::instance($section->course);
         require_capability('moodle/course:manageactivities', $context);
@@ -346,21 +240,17 @@ function perform_moveto($modules, $target) {
  *
  * @return void
  */
-function perform_dupto($modules, $target) {
+function clone_module($modules, $target) {
     global $CFG, $DB;
 
     require_once($CFG->dirroot.'/course/lib.php');
 
     foreach ($modules as $modulerecord) {
         // Check for all possible failure conditions before doing actual work.
-        if (!$cm = get_coursemodule_from_id('', $modulerecord->id, 0, true)) {
-            print_error('invalidcoursemodule');
-        }
+        $cm = validate_module($modulerecord->id);
 
         // Verify target section.
-        if (!$section = $DB->get_record('course_sections', array('course' => $cm->course, 'section' => $target))) {
-            print_error('sectionnotexist', 'block_massaction');
-        }
+        $section = validate_section($cm->course, $target);
 
         $context = context_course::instance($section->course);
         require_capability('moodle/course:manageactivities', $context);
@@ -370,5 +260,41 @@ function perform_dupto($modules, $target) {
         $newcm = duplicate_module($course, $cm);
 
         moveto_module($newcm, $section);
+    }
+}
+
+/**
+ * Checks that the $target section exists in the course.
+ *
+ * @param int $course Course id
+ * @param int $target Section number
+ *
+ * @return object $section Section database record
+ */
+function validate_section($course, $target) {
+    global $DB;
+
+    $section = $DB->get_record('course_sections',
+        array('course' => $course, 'section' => $target));
+
+    if (!$section) {
+        print_error('sectionnotexist', 'block_massaction');
+    } else {
+        return $section;
+    }
+}
+
+/**
+ * Checks that the module exists.
+ *
+ * @param int $moduleid Module id
+ *
+ * @return object $cm Course module database record
+ */
+function validate_module($moduleid) {
+    if (!$cm = get_coursemodule_from_id('', $moduleid, 0, true)) {
+        print_error('invalidcoursemodule');
+    } else {
+        return $cm;
     }
 }
