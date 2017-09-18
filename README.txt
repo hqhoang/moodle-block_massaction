@@ -25,3 +25,8 @@ If you are using...
 
 Please see the README file for the respective version of the plugin for more information
 and change history.
+
+
+Project roadmap
+--  Implement more AJAX and reduce page refreshes
+--  Correct all errors and warnings produced by Moodle's code checker
