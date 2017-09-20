@@ -29,4 +29,6 @@ and change history.
 
 Project roadmap
 --  Implement more AJAX and reduce page refreshes
+--  Re-implement the deletion confirmation page
+--  Create block config page enabling administrators to force-add the block to all courses
 --  Correct all errors and warnings produced by Moodle's code checker
