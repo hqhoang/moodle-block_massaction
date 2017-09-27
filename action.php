@@ -25,15 +25,17 @@ require('../../config.php');
 require_login();
 
 // Parameters/arguments.
-$instanceid     = required_param('instance_id', PARAM_INT);
-$returnurl      = required_param('return_url', PARAM_TEXT);
+$instanceid     = required_param('instanceid', PARAM_INT);
+$returnurl      = required_param('returnurl', PARAM_TEXT);
 $action         = required_param('action', PARAM_TEXT);
 $activities     = required_param('activities', PARAM_RAW);
 $courseid       = required_param('courseid', PARAM_INT);
-$courseformat   = required_param('format', PARAM_TEXT);
-$selectedall    = required_param('selectedall', PARAM_BOOL);
-$section        = required_param('selectedsection', PARAM_TEXT);
+
+$courseformat   = optional_param('format', 'topics', PARAM_TEXT);
+$selectedall    = optional_param('selectedall', false, PARAM_BOOL);
+$section        = optional_param('selectedsection', 'all', PARAM_TEXT);
 $target         = optional_param('target', 0, PARAM_INT);
+$confirmdelete  = optional_param('confirmdelete', false, PARAM_BOOL);
 
 // Check capability.
 $context = context_block::instance($instanceid);
@@ -82,7 +84,11 @@ switch ($action) {
         break;
 
     case 'delete':
-        perform_deletion($modulerecords, $returnurl);
+        if ($confirmdelete) {
+            perform_deletion($modulerecords, $returnurl);
+        } else {
+            display_delete_confirmation_page($modulerecords, $activities, $instanceid, $courseid, $returnurl);
+        }
         break;
 
     case 'move':
@@ -127,8 +133,8 @@ if ($action != 'delete') {
 /**
  * helper function to perform indentation/outdentation
  *
- * @param array $modules list of module records to modify
- * @param int $amount, 1 for indent, -1 for outdent
+ * @param array  $modules list of module records to modify
+ * @param int    $amount 1 for indent, -1 for outdent
  * @param object $context
  *
  * @return void
@@ -152,8 +158,8 @@ function adjust_indentation($modules, $amount, $context) {
 /**
  * helper function to set visibility
  *
- * @param array $modules list of module records to modify
- * @param bool $visible true to show, false to hide
+ * @param array  $modules list of module records to modify
+ * @param bool   $visible true to show, false to hide
  * @param object $context
  *
  * @return void
@@ -171,25 +177,105 @@ function set_visibility($modules, $visible, $context) {
 }
 
 /**
+ * Displays the deletion confirmation page.
+ *
+ * @param array  $modulerecords Array of module records
+ * @param array  $activities Array of selected modules/activities
+ * @param int    $instanceid Instance id
+ * @param int    $courseid Course id
+ * @param string $returnurl The url to which to redirect
+ *
+ * @return void
+ */
+function display_delete_confirmation_page($modulerecords, $activities, $instanceid, $courseid, $returnurl) {
+    global $CFG, $OUTPUT, $PAGE;
+
+    $modules = array();
+
+    foreach ($modulerecords as $modulerecord) {
+        $cm = validate_module($modulerecord->id);
+        $course = validate_course($cm->course);
+
+        $context = context_course::instance($course->id);
+        require_capability('moodle/course:manageactivities', $context);
+
+        $moduletype = get_string('modulename', $cm->modname);
+        $modules[$modulerecord->id] = array('moduletype' => $moduletype, 'modulename' => $cm->name);
+    }
+
+    $continueoptions = array('confirmdelete' => true, 'instanceid' => $instanceid,
+                                   'action' => 'delete', 'courseid' => $courseid,
+                                   'returnurl' => $returnurl, 'activities' => json_encode($activities));
+
+    $canceloptions = array('id' => $course->id);
+    $strconfirmdeletion = get_string('confirmdeletiontitle', 'block_massaction');
+
+    require_login($course->id);
+
+    $PAGE->requires->css('/blocks/massaction/styles.css');
+    $PAGE->set_url(new moodle_url('/blocks/massaction/action.php'));
+    $PAGE->set_title($strconfirmdeletion);
+    $PAGE->set_heading($course->fullname);
+    $PAGE->navbar->add($strconfirmdeletion);
+    echo $OUTPUT->header();
+
+    $content = get_string('confirmdeletiontext', 'block_massaction');
+    $content .= '<table id="block-massaction-module-deletion-list" style="width: 100%;">
+        <thead>
+            <td style="width: 49%;"><h5>'.
+                get_string('moduledeletionname', 'block_massaction').'</h5></td>
+            <td style="width: 2%;">&nbsp;</td>
+            <td style="width: 49%;"><h5>'.
+                get_string('moduledeletiontype', 'block_massaction').'</h5></td>
+        </thead>
+        <tbody>';
+
+    foreach ($modules as $module) {
+        $content .= '
+                <tr>
+                    <td><p>'.$module['modulename'].'</p></td>
+                    <td>&nbsp;</td>
+                    <td><p>'.$module['moduletype'].'</p></td>
+                </tr>';
+    }
+
+    $content .= '
+        </tbody>
+    </table>';
+
+    echo $OUTPUT->box_start('noticebox');
+    $continuebutton = new single_button(
+        new moodle_url($CFG->wwwroot.'/blocks/massaction/action.php', $continueoptions),
+        get_string('delete'), 'post');
+    $cancelbutton = new single_button(
+        new moodle_url($CFG->wwwroot.'/course/view.php?id='.$course->id, $canceloptions),
+        get_string('cancel'), 'get');
+
+    echo $OUTPUT->confirm($content, $continuebutton, $cancelbutton);
+    echo $OUTPUT->box_end();
+    echo $OUTPUT->footer();
+
+    return;
+}
+
+/**
  * perform the actual deletion of the selected course modules
  *
- * @param array $modules
+ * @param array  $modules Array of module database record objects
+ * @param string $returnurl The url to which to redirect
  *
  * @return void
  */
 function perform_deletion($modules, $returnurl) {
-    global $CFG, $DB;
+    global $CFG;
 
     require_once($CFG->dirroot.'/course/lib.php');
 
     foreach ($modules as $modulerecord) {
         $cm = validate_module($modulerecord->id);
+        $course = validate_course($cm->course);
 
-        if (!$course = $DB->get_record('course', array('id' => $cm->course))) {
-            print_error('invalidcourseid');
-        }
-
-        $context     = context_course::instance($course->id);
+        $context = context_course::instance($course->id);
         require_capability('moodle/course:manageactivities', $context);
 
         $modlib = $CFG->dirroot.'/mod/'.$cm->modname.'/lib.php';
@@ -210,7 +296,7 @@ function perform_deletion($modules, $returnurl) {
  * perform the actual relocation of the selected course modules
  *
  * @param array $modules
- * @param int $target ID of the section to move to
+ * @param int   $target ID of the section to move to
  *
  * @return void
  */
@@ -236,7 +322,7 @@ function move_module($modules, $target) {
  * Perform the duplication of the selected course modules
  *
  * @param array $modules
- * @param int $target ID of the section to move to
+ * @param int   $target ID of the section to move to
  *
  * @return void
  */
@@ -296,5 +382,22 @@ function validate_module($moduleid) {
         print_error('invalidcoursemodule');
     } else {
         return $cm;
+    }
+}
+
+/**
+ * Checks that the course exists.
+ *
+ * @param int $courseid The course id
+ *
+ * @return object $course Course database record
+ */
+function validate_course($courseid) {
+    global $DB;
+
+    if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+        print_error('invalidcourseid');
+    } else {
+        return $course;
     }
 }

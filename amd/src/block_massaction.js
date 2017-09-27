@@ -10,6 +10,7 @@ define(['jquery', 'core/str'], function($, corestr) {
              *
              *  [
              *   courseformat: "topics",
+             *   javascriptcheck: "1",
              *   sectionmodules: {0: ["1", "2"], 1: ["3"], 2: ["4", "5", "6"], ...},
              *   sectionnames: ["Main", "Topic 1", "Topic 2", "Topic 3", ...]
              *  ]
@@ -57,7 +58,7 @@ define(['jquery', 'core/str'], function($, corestr) {
             $('#block-massaction-clone').on('change', this.data, this.actionHandler);
 
             // Display the block.
-            this.showBlock();
+            this.showBlock(this.data.javascriptcheck);
         },
         drawCheckboxes: function(data) {
             var courseActivities = '';
@@ -410,9 +411,11 @@ define(['jquery', 'core/str'], function($, corestr) {
                 $.when(nothingSelected).done(window.alert(nothingSelected));
             }
         },
-        showBlock: function() {
-            $('div.block-massaction-jsdisabled').addClass('hidden');
-            $('div.block-massaction-jsenabled').removeClass('hidden');
+        showBlock: function(javascriptcheckenabled) {
+            if (javascriptcheckenabled === "1") {
+                $('div.block-massaction-jsdisabled').addClass('hidden');
+                $('div.block-massaction-jsenabled').removeClass('hidden');
+            }
         }
     };
 });

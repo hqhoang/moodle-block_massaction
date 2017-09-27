@@ -14,10 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
+/**
+ * @package    block_massaction
+ * @copyright  2013 University of Minnesota
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+defined('MOODLE_INTERNAL') || die;
 
-$plugin->component = 'block_massaction'; // Required since Moodle 3.0.
-$plugin->version = 2017092600;  // YYYYMMDDXX (year, month, day, increment).
-$plugin->requires = 2017051500; // YYYYMMDDXX (This is the release version for Moodle 3.3).
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v5.0.2';
+$setting = new admin_setting_configcheckbox('block_massaction/javascriptcheck',
+    new lang_string('javascriptcheck', 'block_massaction'),
+    new lang_string('javascriptcheckdesc', 'block_massaction'), 0, 1);
+$setting->set_locked_flag_options(admin_setting_flag::ENABLED, false);
+$settings->add($setting);

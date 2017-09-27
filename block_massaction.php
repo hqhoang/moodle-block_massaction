@@ -67,6 +67,8 @@ class block_massaction extends block_base {
             return $this->content;
         }
 
+        $javascriptcheck = $this->get_config_data();
+
         $this->content = new stdClass();
         $this->content->text   = '';
         $this->content->footer = '';
@@ -74,6 +76,7 @@ class block_massaction extends block_base {
         if ($PAGE->user_is_editing()) {
             $jsdata = $this->get_section_data($COURSE);
             $jsdata['courseformat'] = $COURSE->format;
+            $jsdata['javascriptcheck'] = $javascriptcheck;
 
             /*
              * Have to cast $jsdata to an array, even though it's already an array, or the javascript
@@ -93,9 +96,14 @@ class block_massaction extends block_base {
             );
 
             $jsdisabled = get_string('jsdisabled', 'block_massaction');
+            $divhtml = $this->set_hidden_class($javascriptcheck, $jsdisabled);
+            $formhtml = $this->get_form_html($COURSE->id,
+                                                 $COURSE->format,
+                                                 $this->instance->id,
+                                                 $_SERVER['REQUEST_URI']);
+
             $this->content->text  = <<< EOB
-<div class="block-massaction-jsdisabled">{$jsdisabled}</div>
-<div class="block-massaction-jsenabled hidden">
+{$divhtml}
     <a id="block-massaction-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
     <select id="block-massaction-selectsome">
     	<option value="all">{$str['allitems']}</option>
@@ -133,18 +141,7 @@ EOB;
     <select id="block-massaction-clone">
     	<option value="">{$str['action_clone']}</option>
     </select>
-    <form id="block-massaction-control-form" name="block-massaction-control-form"
-            action="{$CFG->wwwroot}/blocks/massaction/action.php" method="POST">
-        <input type="hidden" id="block-massaction-action" name="action" value="">
-        <input type="hidden" id="block-massaction-activities" name="activities" value="">
-        <input type="hidden" id="block-massaction-courseid" name="courseid" value="{$COURSE->id}">
-        <input type="hidden" id="block-massaction-format" name="format" value="{$COURSE->format}">
-        <input type="hidden" id="block-massaction-selected-section" name="selectedsection" value="all">
-        <input type="hidden" id="block-massaction-selected-all" name="selectedall" value="false">
-        <input type="hidden" id="block-massaction-target" name="target" value="">
-    	<input type="hidden" id="block-massaction-instance_id" name="instance_id" value="{$this->instance->id}">
-    	<input type="hidden" id="block-massaction-return_url" name="return_url" value="{$_SERVER['REQUEST_URI']}">
-    </form>
+    {$formhtml}
     <div id="block-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
 </div>
 EOB;
@@ -153,7 +150,19 @@ EOB;
         return $this->content;
     }
 
+    /**
+     * @return bool
+     */
     public function _self_test() {
+        return true;
+    }
+
+    /**
+     * Indicates the block has a configuration page.
+     *
+     * @return bool True if there is a configuration page
+     */
+    public function has_config() {
         return true;
     }
 
@@ -185,5 +194,83 @@ EOB;
         $jsdata = array('sectionmodules' => $sectionmodules, 'sectionnames' => $sectionnames);
 
         return $jsdata;
+    }
+
+    /**
+     * Fetches the admin (and user, if it exists) configuration data for the block.
+     *
+     * @return int $javascript 0 if check is disabled, 1 otherwise
+     */
+    private function get_config_data() {
+        $blockconfig = get_config('block_massaction');
+
+        // Set default values.
+        $javascriptcheck = $blockconfig->javascriptcheck;
+
+        if (empty($this->config)) {
+            $this->config = new stdClass();
+            $this->config->javascriptcheck = $javascriptcheck;
+        }
+
+        $javascriptcheck = $this->config->javascriptcheck;
+
+        return $javascriptcheck;
+    }
+
+    /**
+     * Creates the html for the 'jsdisabled' div, which contains a message informing the user that
+     * javascript must be enabled to use the block, and the 'jsenabled' div, which contains the
+     * actual block.
+     *
+     * @param int    $javascriptcheck 0 if the check is disabled, 1 otherwise
+     * @param string $jsdisabled The message to display to the user when javascript is disabled
+     *
+     * @return string $divhtml The html to output to the screen
+     */
+    private function set_hidden_class($javascriptcheck, $jsdisabled) {
+        $divhtml = '';
+
+        if ($javascriptcheck) {
+            $divhtml = '<div class="block-massaction-jsdisabled">'.$jsdisabled.'</div>';
+            $divhtml .= '<div class="block-massaction-jsenabled hidden">';
+        } else {
+            $divhtml = '<div class="block-massaction-jsdisabled hidden">'.$jsdisabled.'</div>';
+            $divhtml .= '<div class="block-massaction-jsenabled hidden">';
+        }
+
+        return $divhtml;
+    }
+
+    /**
+     * Creates the form html for the hidden form submitted when the user chooses the action to apply
+     * to the selected modules.
+     *
+     * @param int    $courseid The course id
+     * @param string $courseformat The format of the course, i.e. "weeks"
+     * @param int    $instanceid The instance id; this is NOT the same thing as the course id
+     * @param string $returnurl The url to redirect to after processing the submission
+     *
+     * @return string $formhtml The form html
+     */
+    private function get_form_html($courseid, $courseformat, $instanceid, $returnurl) {
+        global $CFG;
+
+        $formaction = $CFG->wwwroot.'/blocks/massaction/action.php';
+        $formid = 'block-massaction-control-form';
+
+        $formhtml = '
+        <form id="'.$formid.'" name="'.$formid.'" action="'.$formaction.'" method="POST">
+            <input type="hidden" id="block-massaction-action" name="action" value="">
+            <input type="hidden" id="block-massaction-activities" name="activities" value="">
+            <input type="hidden" id="block-massaction-courseid" name="courseid" value="'.$courseid.'">
+            <input type="hidden" id="block-massaction-format" name="format" value="'.$courseformat.'">
+            <input type="hidden" id="block-massaction-selected-section" name="selectedsection" value="all">
+            <input type="hidden" id="block-massaction-selected-all" name="selectedall" value="false">
+            <input type="hidden" id="block-massaction-target" name="target" value="">
+            <input type="hidden" id="block-massaction-instanceid" name="instanceid" value="'.$instanceid.'">
+            <input type="hidden" id="block-massaction-returnurl" name="returnurl" value="'.$returnurl.'">
+        </form>';
+
+        return $formhtml;
     }
 }

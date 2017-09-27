@@ -41,16 +41,26 @@ $string['section_zero'] = 'יחידת מבוא';
 $string['selecttarget'] = 'אנא בחרו יחידת־הוראה אליה יועברו הפריטים';
 $string['noitemselected'] = 'יש לבחור פריט אחד לפחות לשם הפעלת הרכיב';
 
+$string['confirmation'] = 'Are you sure you want to delete {$a} items?';
 $string['noaction'] = 'לא נחברה פעולה';
 $string['invalidaction'] = 'פעולה לא ידועה: {$a}';
 $string['invalidmoduleid'] = 'קוד רכיב שגוי: {$a}';
 $string['invalidcoursemodule'] = 'רכיב שגוי';
 $string['invalidcourseid'] = 'קוד קורס שגוי';
+$string['confirmdeletiontitle'] = 'האם אתם מעוניינים למחוק את כל הפריטים';
+$string['confirmdeletiontext'] = 'Are you sure you want to delete the following module(s)?';
+$string['moduledeletionname'] = 'Module name';
+$string['moduledeletiontype'] = 'Module type';
 $string['sectionnotexist'] = 'Target section does not exist';
 $string['missingparam'] = 'Error coding: missing required JSON param "{$a}"';
 
-$string['usage_help'] = <<< EOB
-<p>This block allows instructors to perform actions upon multiple resources or activities in the class view, rather than having to perform repeated actions on individual items.</p>
+$string['usage_help'] = "<p>This block allows instructors to perform actions upon multiple resources or activities in the class view, rather than having to perform repeated actions on individual items.</p>
 <p>To use this block, Javascript must be enabled in your browser, you must be in editing mode in the course home page, and AJAX must be disabled. Only the courses in the Week or Topics formats are supported.</p>
-<p>Supported actions include mass deletion, mass hiding, mass showing, and mass moving. To select items to perform actions on, simply click the checkbox to the right of it in the course home page, or you may select all items, or select all items in a section using the block. To perform actions, click the action you would like to perform inside the block.</p>
-EOB;
+<p>Supported actions include mass deletion, mass hiding, mass showing, and mass moving. To select items to perform actions on, simply click the checkbox to the right of it in the course home page, or you may select all items, or select all items in a section using the block. To perform actions, click the action you would like to perform inside the block.</p>";
+
+$string['jsdisabled'] = 'You must enable Javascript to use this block.';
+
+// Config page strings.
+$string['javascriptcheck'] = 'Perform javascript-enabled check?';
+$string['javascriptcheckdesc'] = '<p>If this check is enabled, the block will check whether javascript is enabled prior to displaying the block.</p>
+<p>If this check is not enabled, the block displays as normal even if javascript is not enabled in the user\'s browser.</p>';

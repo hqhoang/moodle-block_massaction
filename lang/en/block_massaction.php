@@ -15,6 +15,7 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string['pluginname'] = 'Mass action block';
+$string['massaction:addinstance'] = 'Add a new Mass Actions block';
 $string['massaction:use'] = 'Use the Mass Actions block';
 $string['blockname'] = 'Mass Actions';
 $string['blocktitle'] = 'Mass Actions';
@@ -47,6 +48,10 @@ $string['invalidaction'] = 'Unknown action: {$a}';
 $string['invalidmoduleid'] = 'Invalid module ID: {$a}';
 $string['invalidcoursemodule'] = 'Invalid course module';
 $string['invalidcourseid'] = 'Invalid course ID';
+$string['confirmdeletiontitle'] = 'Confirm mass deletion';
+$string['confirmdeletiontext'] = 'Are you sure you want to delete the following module(s)?';
+$string['moduledeletionname'] = 'Module name';
+$string['moduledeletiontype'] = 'Module type';
 $string['sectionnotexist'] = 'Target section does not exist';
 $string['missingparam'] = 'Error coding: missing required JSON param "{$a}"';
 
@@ -55,3 +60,8 @@ $string['usage_help'] = '<p>This block allows instructors to perform actions upo
 <p>Supported actions include mass deletion, mass hiding, mass showing, and mass moving. To select items to perform actions on, simply click the checkbox to the right of it in the course home page, or you may select all items, or select all items in a section using the block. To perform actions, click the action you would like to perform inside the block.</p>';
 
 $string['jsdisabled'] = 'You must enable Javascript to use this block.';
+
+// Config page strings.
+$string['javascriptcheck'] = 'Perform javascript-enabled check?';
+$string['javascriptcheckdesc'] = '<p>If this check is enabled, the block will check whether javascript is enabled prior to displaying the block.</p>
+<p>If this check is not enabled, the block displays as normal even if javascript is not enabled in the user\'s browser.</p>';

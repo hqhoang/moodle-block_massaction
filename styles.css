@@ -1,6 +1,32 @@
-#block-massaction-selectsome{width: 99%;}
-#block-massaction-move {margin-left: 0.5em; max-width: 95%;}
-#block-massaction-clone {margin-left: 0.5em; max-width: 95%;}
-#block-massaction-selectnone {float:right; position:relative;}
-.block_massaction .massaction-action {margin-left: 0.5em; position: relative;}
-#block-massaction-help-icon {padding:0.2em; text-align:center;}
+#block-massaction-selectsome {
+    width: 99%;
+}
+
+#block-massaction-move {
+    margin-left: 0.5em;
+    max-width: 95%;
+}
+
+#block-massaction-clone {
+    margin-left: 0.5em;
+    max-width: 95%;
+}
+
+#block-massaction-selectnone {
+    float: right;
+    position: relative;
+}
+
+.block_massaction .massaction-action {
+    margin-left: 0.5em;
+    position: relative;
+}
+
+#block-massaction-help-icon {
+    padding: 0.2em;
+    text-align: center;
+}
+
+#block-massaction-module-deletion-list {
+    padding-bottom: 0.1em;
+}

@@ -41,11 +41,16 @@ $string['section_zero'] = 'Général';
 $string['selecttarget'] = 'Merci de sélectionner une section cible pour y déplacer des éléments';
 $string['noitemselected'] = 'Merci de sélectionner au moins un élément pour appliquer l\'action en lot';
 
+$string['confirmation'] = 'Etes-vous sûr de vouloir supprimer {$a} élément(s)?';
 $string['noaction'] = 'Pas d\'action spécifiée';
 $string['invalidaction'] = 'Action inconnue : {$a}';
 $string['invalidmoduleid'] = 'Id de l\'élément invalide : {$a}';
 $string['invalidcoursemodule'] = 'Elément de cours invalide';
 $string['invalidcourseid'] = 'Id de cours invalide';
+$string['confirmdeletiontitle'] = 'Confirmer la suppression en lot';
+$string['confirmdeletiontext'] = 'Etes-vous sûr de vouloir supprimer le(s) élément(s) suivant(s) ?';
+$string['moduledeletionname'] = 'Nom du module';
+$string['moduledeletiontype'] = 'Type de module';
 $string['sectionnotexist'] = 'La section cible n\'existe pas';
 $string['missingparam'] = 'Erreur de code : il manque le paramètre JSON "{$a}"';
 
@@ -61,3 +66,8 @@ $string['usage_help'] = '<p>Ce bloc permet aux enseignants d\'effectuer des acti
 Pour sélectionner un élément pour y effectuer une action, il suffit de cliquer sur la case à droite de celui-ci sur la page du cours, ou vous pouvez sélectionner tous les éléments, ou sélectionner tous les éléments dans une section à l\'aide du bloc. Pour effectuer une action, cliquez sur l\'action que vous souhaitez effectuer à l\'intérieur du bloc.</p>';
 
 $string['jsdisabled'] = 'Vous devez activer JavaScript pour utiliser ce bloc.';
+
+// Config page strings.
+$string['javascriptcheck'] = 'Effectuer un test javascript activé?';
+$string['javascriptcheckdesc'] = '<p>Si cette vérification est activée, le bloc vérifie si javascript est activé avant d\'afficher le bloc.</p>
+<p>Si cette vérification n\'est pas activée, le bloc affiche normal, même si javascript n\'est pas activé dans le navigateur de l\'utilisateur.</p>';
