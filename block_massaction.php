@@ -28,6 +28,8 @@ defined('MOODLE_INTERNAL') || die();
  * Class for displaying the Mass Actions block.
  *
  * @package block_massaction
+ * @copyright  2013 University of Minnesota
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class block_massaction extends block_base {
 
