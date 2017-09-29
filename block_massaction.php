@@ -99,7 +99,7 @@ class block_massaction extends block_base {
                                                  $_SERVER['REQUEST_URI']);
 
             $this->content->text  = <<< EOB
-<div class="block-massaction-jsenabled hidden">
+<div class="block-massaction-jsenabled">
     <a id="block-massaction-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
     <select id="block-massaction-selectsome">
     	<option value="all">{$str['allitems']}</option>
