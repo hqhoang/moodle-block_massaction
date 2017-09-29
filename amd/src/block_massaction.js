@@ -63,6 +63,7 @@ define(['jquery', 'core/str'], function($, corestr) {
             var moduleId = 0;
             var moduleKey = 0;
             var sectionId = 0;
+            var counter = 0;
 
             // Iterate through our sections and their activities, drawing checkboxes for each activity.
             for (sectionId in data['sectionmodules']) {
@@ -80,13 +81,14 @@ define(['jquery', 'core/str'], function($, corestr) {
 
                     for (moduleKey in data['sectionmodules'][sectionId]) {
                         if (moduleKey !== null) {
+                            counter++;
                             moduleId = data['sectionmodules'][sectionId][moduleKey];
                             inputControl = document.createElement('input');
                             inputControl.type = 'checkbox';
                             inputControl.id = 'massaction-input-' + moduleId;
                             inputControl.className = 'massaction-checkbox';
 
-                            courseActivities[moduleKey].append(inputControl);
+                            courseActivities[moduleKey].appendChild(inputControl);
                         }
                     }
                 }
