@@ -67,8 +67,6 @@ class block_massaction extends block_base {
             return $this->content;
         }
 
-        $javascriptcheck = $this->get_config_data();
-
         $this->content = new stdClass();
         $this->content->text   = '';
         $this->content->footer = '';
@@ -76,7 +74,6 @@ class block_massaction extends block_base {
         if ($PAGE->user_is_editing()) {
             $jsdata = $this->get_section_data($COURSE);
             $jsdata['courseformat'] = $COURSE->format;
-            $jsdata['javascriptcheck'] = $javascriptcheck;
 
             /*
              * Have to cast $jsdata to an array, even though it's already an array, or the javascript
@@ -96,14 +93,13 @@ class block_massaction extends block_base {
             );
 
             $jsdisabled = get_string('jsdisabled', 'block_massaction');
-            $divhtml = $this->set_hidden_class($javascriptcheck, $jsdisabled);
             $formhtml = $this->get_form_html($COURSE->id,
                                                  $COURSE->format,
                                                  $this->instance->id,
                                                  $_SERVER['REQUEST_URI']);
 
             $this->content->text  = <<< EOB
-{$divhtml}
+<div class="block-massaction-jsenabled hidden">
     <a id="block-massaction-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
     <select id="block-massaction-selectsome">
     	<option value="all">{$str['allitems']}</option>
@@ -158,15 +154,6 @@ EOB;
     }
 
     /**
-     * Indicates the block has a configuration page.
-     *
-     * @return bool True if there is a configuration page
-     */
-    public function has_config() {
-        return true;
-    }
-
-    /**
      * Gets an array of section numbers and module/activity ids and an array of section numbers and
      * their human-readable labels.
      *
@@ -194,51 +181,6 @@ EOB;
         $jsdata = array('sectionmodules' => $sectionmodules, 'sectionnames' => $sectionnames);
 
         return $jsdata;
-    }
-
-    /**
-     * Fetches the admin (and user, if it exists) configuration data for the block.
-     *
-     * @return int $javascript 0 if check is disabled, 1 otherwise
-     */
-    private function get_config_data() {
-        $blockconfig = get_config('block_massaction');
-
-        // Set default values.
-        $javascriptcheck = $blockconfig->javascriptcheck;
-
-        if (empty($this->config)) {
-            $this->config = new stdClass();
-            $this->config->javascriptcheck = $javascriptcheck;
-        }
-
-        $javascriptcheck = $this->config->javascriptcheck;
-
-        return $javascriptcheck;
-    }
-
-    /**
-     * Creates the html for the 'jsdisabled' div, which contains a message informing the user that
-     * javascript must be enabled to use the block, and the 'jsenabled' div, which contains the
-     * actual block.
-     *
-     * @param int    $javascriptcheck 0 if the check is disabled, 1 otherwise
-     * @param string $jsdisabled The message to display to the user when javascript is disabled
-     *
-     * @return string $divhtml The html to output to the screen
-     */
-    private function set_hidden_class($javascriptcheck, $jsdisabled) {
-        $divhtml = '';
-
-        if ($javascriptcheck) {
-            $divhtml = '<div class="block-massaction-jsdisabled">'.$jsdisabled.'</div>';
-            $divhtml .= '<div class="block-massaction-jsenabled hidden">';
-        } else {
-            $divhtml = '<div class="block-massaction-jsdisabled hidden">'.$jsdisabled.'</div>';
-            $divhtml .= '<div class="block-massaction-jsenabled hidden">';
-        }
-
-        return $divhtml;
     }
 
     /**
