@@ -15,6 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Configures and displays the block.
+ *
  * @package    block_massaction
  * @copyright  2013 University of Minnesota
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,6 +24,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * Class for displaying the Mass Actions block.
+ *
+ * @package block_massaction
+ */
 class block_massaction extends block_base {
 
     /**
@@ -32,7 +39,13 @@ class block_massaction extends block_base {
     }
 
     /**
-     * @see block_base::applicable_formats()
+     * Which page types this block may appear on.
+     *
+     * The information returned here is processed by the
+     * {@link blocks_name_allowed_in_format()} function. Look there if you need
+     * to know exactly how this works.
+     *
+     * @return array page-type prefix => true/false.
      */
     public function applicable_formats() {
         global $COURSE;
@@ -58,10 +71,12 @@ class block_massaction extends block_base {
     }
 
     /**
-     * @see block_base::get_content()
+     * Sets up the content of the block for display to the user.
+     *
+     * @return The HTML content of the block.
      */
     public function get_content() {
-        global $CFG, $COURSE, $OUTPUT, $PAGE;
+        global $COURSE, $OUTPUT, $PAGE;
 
         if ($this->content !== null) {
             return $this->content;
@@ -92,7 +107,6 @@ class block_massaction extends block_base {
                 'action_clone'  => get_string('action_clone', 'block_massaction')
             );
 
-            $jsdisabled = get_string('jsdisabled', 'block_massaction');
             $formhtml = $this->get_form_html($COURSE->id,
                                                  $COURSE->format,
                                                  $this->instance->id,
@@ -147,7 +161,10 @@ EOB;
     }
 
     /**
-     * @return bool
+     * Tests if this block has been implemented correctly.
+     * Also, $errors isn't used right now
+     *
+     * @return boolean
      */
     public function _self_test() {
         return true;

@@ -63,10 +63,9 @@ define(['jquery', 'core/str'], function($, corestr) {
             var moduleId = 0;
             var moduleKey = 0;
             var sectionId = 0;
-            var counter = 0;
 
             // Iterate through our sections and their activities, drawing checkboxes for each activity.
-            for (sectionId in data['sectionmodules']) {
+            for (sectionId in data.sectionmodules) {
                 /*
                  * Also check if the section exists in the DOM so we don't attempt to draw checkboxes
                  * for activities that do not exist in the DOM.
@@ -79,17 +78,14 @@ define(['jquery', 'core/str'], function($, corestr) {
                     jQueryIdentifier = sectionId + ' ul.section li.activity ' + 'div.mod-indent-outer div';
                     courseActivities = $('#section-' + jQueryIdentifier).children('span.actions');
 
-                    for (moduleKey in data['sectionmodules'][sectionId]) {
-                        if (moduleKey !== null) {
-                            counter++;
-                            moduleId = data['sectionmodules'][sectionId][moduleKey];
-                            inputControl = document.createElement('input');
-                            inputControl.type = 'checkbox';
-                            inputControl.id = 'massaction-input-' + moduleId;
-                            inputControl.className = 'massaction-checkbox';
+                    for (moduleKey in data.sectionmodules[sectionId]) {
+                        moduleId = data.sectionmodules[sectionId][moduleKey];
+                        inputControl = document.createElement('input');
+                        inputControl.type = 'checkbox';
+                        inputControl.id = 'massaction-input-' + moduleId;
+                        inputControl.className = 'massaction-checkbox';
 
-                            courseActivities[moduleKey].appendChild(inputControl);
-                        }
+                        courseActivities[moduleKey].appendChild(inputControl);
                     }
                 }
             }
@@ -103,139 +99,114 @@ define(['jquery', 'core/str'], function($, corestr) {
             var sectionId = 0;
 
             // This loop creates and appends all the options to the three drop menus.
-            for (sectionId in data['sectionnames']) {
-                if (sectionId !== null) {
-                    for (menuId in dropMenus) {
-                        if (menuId !== null) {
-                            menuItem = document.createElement('option');
-                            menuItem.text = data['sectionnames'][sectionId];
-                            menuItem.value = sectionId;
+            for (sectionId in data.sectionnames) {
+                for (menuId in dropMenus) {
+                    menuItem = document.createElement('option');
+                    menuItem.text = data.sectionnames[sectionId];
+                    menuItem.value = sectionId;
 
-                            /*
-                             * We are disabling menu options in the "Select all in section" menu for
-                             * sections that do not currently have any modules available to select.
-                             */
-                            if (dropMenus[menuId] === 'block-massaction-selectsome') {
-                                if ((sectionId in data['sectionmodules'])) {
-                                    menuItem.disabled = false;
-                                } else {
-                                    menuItem.disabled = true;
-                                }
-                            } else {
-                                // We aren't disabling any options in the other two menus.
-                                menuItem.disabled = false;
-                            }
-
-                            $('#' + dropMenus[menuId]).append(menuItem);
+                    /*
+                     * We are disabling menu options in the "Select all in section" menu for
+                     * sections that do not currently have any modules available to select.
+                     */
+                    if (dropMenus[menuId] === 'block-massaction-selectsome') {
+                        if ((sectionId in data.sectionmodules)) {
+                            menuItem.disabled = false;
+                        } else {
+                            menuItem.disabled = true;
                         }
+                    } else {
+                        // We aren't disabling any options in the other two menus.
+                        menuItem.disabled = false;
                     }
+
+                    $('#' + dropMenus[menuId]).append(menuItem);
                 }
             }
         },
         selectAllHandler: function(eventData) {
             // Defaults. Assume we have a bad target and plan to do nothing.
-            var checkAll  = false;
+            var checkAll = false;
             var checkNone = false;
             var checkSome = false;
             var sectionId = '';
-            var moduleId  = '';
+            var moduleId = '';
             var moduleKey = '';
 
-            if (eventData.currentTarget.id == 'block-massaction-selectall') {
-                checkAll = true;
-            } else if (eventData.currentTarget.id == 'block-massaction-deselectall') {
-                checkNone = true;
-            } else if (eventData.currentTarget.id == 'block-massaction-selectsome') {
-                /*
-                 * If we are checking modules in one section only, we want to first uncheck all modules.
-                 * This makes it easier for users to change their selections or correct erroneous selections
-                 * because we reset to the default state (all unchecked) before checking the modules in the
-                 * selected section. For example, if the user clicks 'Select all' and intended to click the
-                 * drop menu instead, then they can simply make the correct selection from the drop menu
-                 * and move on, rather than having to deselect all first. The same is true if they make
-                 * an erroneous selection in the drop menu.
-                 */
-                checkNone = true;
-                checkSome = true;
-            }
+            /*
+             * There is no default case in this switch because it is simply unnecessary. If
+             * the value of eventData.currentTarget.id has been hacked and does not match
+             * any of the three articulated cases, then we do not want to take any action, anyway.
+             * Since that is accomplished both with and without the default case, I have opted
+             * to omit the default case.
+             */
+            switch (eventData.currentTarget.id) {
+                case 'block-massaction-selectsome':
+                    checkSome = true;
+                    // Falls through.
 
-            if (checkNone === true) {
-                /*
-                 * They clicked "Deselect all" or "Select all in section", which means that if they
-                 * previously clicked "Select all", then they have over-ridden that choice.
-                 * Set this input's value to false to track that change.
-                 */
-                $('#block-massaction-selected-all').val('false');
-
-                // Proceed to uncheck all the boxes.
-                for (sectionId in eventData.data['sectionmodules']) {
-                    if (sectionId !== null) {
-                        for (moduleKey in eventData.data['sectionmodules'][sectionId]) {
-                            if (moduleKey !== null) {
-                                moduleId = eventData.data['sectionmodules'][sectionId][moduleKey];
-
-                                /*
-                                 * Make sure this module exists in the DOM. No point setting state
-                                 * on a non-existent input.
-                                 */
-                                if ($('#massaction-input-' + moduleId).length > 0) {
-                                    $('#massaction-input-' + moduleId).prop('checked', false);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if (checkSome === true) {
-                    sectionId = eventData.target['value'];
-
+                case 'block-massaction-selectnone':
+                    checkNone = true;
                     /*
-                     * If the "Select all in section" selected option is "all", we don't want to try
-                     * to check any boxes because this is not a section id.
+                     * They clicked "Deselect all" or "Select all in section", which means that if they
+                     * previously clicked "Select all", then they have over-ridden that choice.
+                     * Set this input's value to false to track that change.
                      */
-                    if (sectionId !== 'all') {
-                        for (moduleKey in eventData.data['sectionmodules'][sectionId]) {
-                            if (moduleKey !== null) {
-                                moduleId = eventData.data['sectionmodules'][sectionId][moduleKey];
+                    $('#block-massaction-selected-all').val('false');
+                    // Falls through.
 
-                                    /*
-                                     * Make sure this module exists in the DOM. No point setting state
-                                     * on a non-existent input.
-                                     */
-                                if ($('#massaction-input-' + moduleId).length > 0) {
-                                    $('#massaction-input-' + moduleId).prop('checked', true);
-                                }
+                case 'block-massaction-selectall':
+                    if (!checkNone) {
+                        checkAll = true;
+                        $('#block-massaction-selected-all').val('true');
+                    }
+
+                    // Proceed to un|check all the boxes, as appropriate.
+                    for (sectionId in eventData.data.sectionmodules) {
+                        for (moduleKey in eventData.data.sectionmodules[sectionId]) {
+                            moduleId = eventData.data.sectionmodules[sectionId][moduleKey];
+
+                            /*
+                             * Make sure this module exists in the DOM. No point setting state
+                             * on a non-existent input.
+                             */
+                            if ($('#massaction-input-' + moduleId).length > 0) {
+                                $('#massaction-input-' + moduleId).prop('checked', checkAll);
                             }
                         }
                     }
-                }
-            } else if (checkAll === true) {
-                // This lets us track whether the user clicked "Select all".
-                $('#block-massaction-selected-all').val('true');
 
-                // Proceed to check all the boxes.
-                for (sectionId in eventData.data['sectionmodules']) {
-                    if (sectionId !== null) {
-                        for (moduleKey in eventData.data['sectionmodules'][sectionId]) {
-                            if (moduleKey !== null) {
-                                moduleId = eventData.data['sectionmodules'][sectionId][moduleKey];
+                    if (checkSome === true) {
+                        sectionId = eventData.target.value;
+
+                        for (moduleKey in eventData.data.sectionmodules[sectionId]) {
+                            moduleId = eventData.data.sectionmodules[sectionId][moduleKey];
 
                                 /*
                                  * Make sure this module exists in the DOM. No point setting state
                                  * on a non-existent input.
                                  */
-                                if ($('#massaction-input-' + moduleId).length > 0) {
-                                    $('#massaction-input-' + moduleId).prop('checked', true);
-                                }
+                            if ($('#massaction-input-' + moduleId).length > 0) {
+                                $('#massaction-input-' + moduleId).prop('checked', true);
                             }
                         }
+                    } else {
+                        /*
+                         * The user did not select all in a section. So we have to set this
+                         * menu's value back to 'all' in case they had previously made a menu
+                         * selection and are now clicking 'Select all' or 'Deselect all'.
+                         *
+                         * This is critical for correct operation of the block later!
+                         */
+                        $('#block-massaction-selectsome').val('all');
                     }
-                }
+                    break;
             }
         },
         actionHandler: function(eventData) {
             var activities = new Array();
-            var courseFormat = eventData.data['courseformat'];
+            var activeTabId = 0;
+            var courseFormat = eventData.data.courseformat;
             var moduleId = '';
             var moduleKey = null;
             var numberOfActivities = 0;
@@ -253,41 +224,43 @@ define(['jquery', 'core/str'], function($, corestr) {
              */
             if (courseFormat === 'onetopic') {
                 var activeTab = $('li.active:eq(0)');
-                var textContent = activeTab[0]['textContent'];
+                var textContent = activeTab[0].textContent;
                 var activeSection = $("li[aria-label='" + textContent + "']").attr('id');
                 activeSection = activeSection.split('-');
-                var activeTabId = activeSection[1];
+                activeTabId = activeSection[1];
             }
 
             $('#block-massaction-selected-section').val(sectionId);
 
             // Find out what the user wants to do.
-            var actionTarget = eventData['currentTarget']['id'].split('-');
+            var actionTarget = eventData.currentTarget.id.split('-');
             var action = actionTarget[actionTarget.length - 1];
 
-            // Find out to which section the user wants to do it.
-            if ($('#block-massaction-selected-all').val !== 'true') {
-                // They did not select all in a section.
-                if (sectionId === 'all') {
-                    // Find which checkbxoes they actually checked.
-                    for (sectionId in eventData.data['sectionmodules']) {
-                        if (sectionId !== null) {
-                            for (moduleKey in eventData.data['sectionmodules'][sectionId]) {
-                                if (moduleKey !== null) {
-                                    moduleId = eventData.data['sectionmodules'][sectionId][moduleKey];
+            switch (sectionId) {
+                case 'all':
+                    // The user did not select all in a section. Instead, the user
+                    // either clicked 'Select All' or manually selected modules.
+                    for (sectionId in eventData.data.sectionmodules) {
+                        for (moduleKey in eventData.data.sectionmodules[sectionId]) {
+                            moduleId = eventData.data.sectionmodules[sectionId][moduleKey];
 
-                                    if ($('#massaction-input-' + moduleId).length > 0 &&
-                                        $('#massaction-input-' + moduleId).is(':checked')) {
+                            if (((courseFormat === 'onetopic' && activeTabId === sectionId) ||
+                                 courseFormat !== 'onetopic') &&
+                                 $('#massaction-input-' + moduleId).length > 0 &&
+                                 $('#massaction-input-' + moduleId).is(':checked')) {
 
-                                        activities.push(moduleId);
-                                    }
-                                }
+                                activities.push(moduleId);
+                            } else if ($('#block-massaction-selected-all').val() === 'true' &&
+                                       courseFormat === 'onetopic' && activeTabId !== sectionId) {
+                                activities.push(moduleId);
                             }
                         }
                     }
-                } else {
+                    break;
+
+                default:
                     // They selected all in a section.
-                    for (moduleKey in eventData.data['sectionmodules'][sectionId]) {
+                    for (moduleKey in eventData.data.sectionmodules[sectionId]) {
                         /*
                          * Ensure the activity is actually checked because it is possible they selected
                          * all in a section, then changed their minds and manually deselected one or more.
@@ -295,85 +268,28 @@ define(['jquery', 'core/str'], function($, corestr) {
                          * a situation, the user would have to manually change ther selection in the drop
                          * menu, as well.
                          */
-                        if (moduleKey !== null) {
-                            moduleId = eventData.data['sectionmodules'][sectionId][moduleKey];
+                        moduleId = eventData.data.sectionmodules[sectionId][moduleKey];
 
-                            if (courseFormat === 'onetopic') {
-                                /*
-                                 * If the selected section is also the active section, then there
-                                 * are checkboxes in the DOM which state we can check. If the
-                                 * selected section is not the active section, then there are no
-                                 * checkboxes in the DOM which state to check and so we add all
-                                 * module ids for the selected section to the activities array
-                                 * for submission.
-                                 */
-                                if (activeTabId === sectionId) {
-                                    if ($('#massaction-input-' + moduleId).length > 0 &&
-                                        $('#massaction-input-' + moduleId).is(':checked')) {
+                        if (((courseFormat === 'onetopic' && activeTabId === sectionId) ||
+                             courseFormat !== 'onetopic') &&
+                             $('#massaction-input-' + moduleId).length > 0 &&
+                             $('#massaction-input-' + moduleId).is(':checked')) {
 
-                                        activities.push(moduleId);
-                                    }
-                                } else {
-                                    activities.push(moduleId);
-                                }
-                            } else {
-                                if ($('#massaction-input-' + moduleId).length > 0 &&
-                                    $('#massaction-input-' + moduleId).is(':checked')) {
-
-                                    activities.push(moduleId);
-                                }
-                            }
+                            activities.push(moduleId);
+                        } else if (courseFormat === 'onetopic' && activeTabId !== sectionId) {
+                            activities.push(moduleId);
                         }
                     }
-                }
-            } else {
-                /*
-                 * The user clicked "Select All". However, just like if they'd selected all in a section,
-                 * we need to check that each of these activities' checkboxes is actually checked because
-                 * they may have selected all and then manually deselected one or more. We don't want the
-                 * user to have to manually check 15 of 16 (or 96 of 100) checkboxes on the page. They
-                 * should be able to click "Select All" and then manually deselect a few to save time.
-                 */
-                for (sectionId in eventData.data['sectionmodules']) {
-                    if (sectionId !== null) {
-                        for (moduleKey in eventData.data['sectionmodules'][sectionId]) {
-                            if (moduleKey !== null) {
-                                moduleId = eventData.data['sectionmodules'][sectionId][moduleKey];
-
-                                if (courseFormat === 'onetopic') {
-                                    /*
-                                     * If the current section is also the active section, then there
-                                     * are checkboxes in the DOM which state we can check. If the
-                                     * current section is not the active section, then there are no
-                                     * checkboxes in the DOM which state to check and so we add all
-                                     * module ids for the current section to the activities array
-                                     * for submission.
-                                     */
-                                    if (activeTabId === sectionId) {
-                                        if ($('#massaction-input-' + moduleId).length > 0 &&
-                                            $('#massaction-input-' + moduleId).is(':checked')) {
-
-                                            activities.push(moduleId);
-                                        } else {
-                                            activities.push(moduleId);
-                                        }
-                                    }
-                                } else {
-                                    if ($('#massaction-input-' + moduleId).length > 0 &&
-                                        $('#massaction-input-' + moduleId).is(':checked')) {
-
-                                        activities.push(moduleId);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
             }
 
             numberOfActivities = activities.length;
 
-            switch(action) {
+            /*
+             * The default case for this switch has been omitted because if the value of action
+             * is not one of the three enumerated in the switch, then there is nothing special
+             * we need to do.
+             */
+            switch (action) {
                 case 'delete':
                     if (numberOfActivities > 0) {
                         var confirmDelete = corestr.get_string('confirmation',
@@ -383,6 +299,8 @@ define(['jquery', 'core/str'], function($, corestr) {
                         $.when(confirmDelete).done(function(confirmDelete) {
                             if (!window.confirm(confirmDelete)) {
                                 return false;
+                            } else {
+                                return true;
                             }
                         });
                     }
@@ -391,10 +309,6 @@ define(['jquery', 'core/str'], function($, corestr) {
                 case 'move':
                 case 'clone':
                     target = $('#block-massaction-' + action).val();
-                    break;
-
-                default:
-                    // Doing nothing intentionally.
                     break;
             }
 

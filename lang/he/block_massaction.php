@@ -14,6 +14,14 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Mass Actions block Hebrew language strings.
+ *
+ * @package    block_massaction
+ * @copyright  2013 University of Minnesota
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 $string['pluginname'] = 'ניהול רכיבים כולל';
 $string['massaction:use'] = 'ניהול רכיבים כולל:זמין לשימוש';
 $string['blockname'] = 'ניהול רכיבים כולל';

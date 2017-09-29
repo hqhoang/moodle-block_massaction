@@ -14,10 +14,18 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Mass Actions block version information.
+ *
+ * @package    block_massaction
+ * @copyright  2013 University of Minnesota
+ * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->component = 'block_massaction'; // Required since Moodle 3.0.
-$plugin->version = 2017092801;  // YYYYMMDDXX (year, month, day, increment).
+$plugin->version = 2017092900;  // YYYYMMDDXX (year, month, day, increment).
 $plugin->requires = 2017051500; // YYYYMMDDXX (This is the release version for Moodle 3.3).
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = 'v5.0.4';
+$plugin->release = 'v5.1.0';
