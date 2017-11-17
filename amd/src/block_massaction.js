@@ -320,7 +320,9 @@ define(['jquery', 'core/str'], function($, corestr) {
                 $('#block-massaction-control-form').submit();
             } else {
                 var nothingSelected = corestr.get_string('noitemselected', 'block_massaction');
-                $.when(nothingSelected).done(window.alert(nothingSelected));
+                $.when(nothingSelected).done(function(alertString) {
+                    window.alert(alertString);
+                });;
             }
         }
     };
