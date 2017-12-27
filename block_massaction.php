@@ -98,34 +98,56 @@ class block_massaction extends block_base {
              * modules and the ids of its modules.
              */
             $PAGE->requires->js_call_amd('block_massaction/block_massaction', 'init', array($jsdata));
+	
+	    $formhtml = $this->get_form_html(
+		$COURSE->id,
+		$COURSE->format,
+		$this->instance->id,
+	    	$_SERVER['REQUEST_URI']
+	    );
 
-            $str = array(
-                'selectall'     => get_string('selectall', 'block_massaction'),
-                'itemsin'       => get_string('itemsin', 'block_massaction'),
-                'allitems'      => get_string('allitems', 'block_massaction'),
-                'selectnone'    => get_string('selectnone', 'block_massaction'),
-                'withselected'  => get_string('withselected', 'block_massaction'),
-                'action_move'   => get_string('action_move', 'block_massaction'),
-                'action_clone'  => get_string('action_clone', 'block_massaction')
-            );
+	    $this->content->text .= html_writer::start_tag('div', 
+		array('class' => 'block-massaction-jsenabled'));
+	    $this->content->text .= html_writer::start_tag('div', 
+		array('class' => 'block-massaction-select'));
+            $this->content->text .= html_writer::start_tag('ul');
+            $this->content->text .= html_writer::start_tag('li');
+	    $this->content->text .= html_writer::start_tag('a',
+		array('id'    => 'block-massaction-selectall',
+                      'href'  => 'javascript:void(0);',
+                      'title' => get_string('selectall', 'block_massaction')));
+            $this->content->text .= get_string('selectall', 'block_massaction');
+            $this->content->text .= html_writer::end_tag('a');
+            $this->content->text .= html_writer::end_tag('li');
+            $this->content->text .= html_writer::start_tag('li');
+            $this->content->text .= html_writer::start_tag('select',
+                array('id' => 'block-massaction-selectsome'));
+            $this->content->text .= html_writer::start_tag('option',
+                array('value' => 'all'));
+            $this->content->text .= get_string('allitems', 'block_massaction');
+            $this->content->text .= html_writer::end_tag('option');
+            $this->content->text .= html_writer::end_tag('select');
+            $this->content->text .= html_writer::end_tag('li');
 
-            $formhtml = $this->get_form_html($COURSE->id,
-                                                 $COURSE->format,
-                                                 $this->instance->id,
-                                                 $_SERVER['REQUEST_URI']);
-
-            $this->content->text  = <<< EOB
-<div class="block-massaction-jsenabled">
-    <a id="block-massaction-selectall" href="javascript:void(0);">{$str['selectall']}</a><br/>
-    <select id="block-massaction-selectsome">
-    	<option value="all">{$str['allitems']}</option>
-    </select>
-    <a id="block-massaction-selectnone" href="javascript:void(0);">{$str['selectnone']}</a><br/><br/>
-
-    {$str['withselected']}:
-EOB;
-
-            // Print the action links.
+            $this->content->text .= html_writer::start_tag('li');
+	    $this->content->text .= html_writer::start_tag('a',
+                array('id'    => 'block-massaction-selectnone',
+                      'href'  => 'javascript:void(0);',
+                      'title' => get_string('selectnone', 'block_massaction')));
+            $this->content->text .= get_string('selectnone', 'block_massaction');
+            $this->content->text .= html_writer::end_tag('a');
+            $this->content->text .= html_writer::end_tag('li');
+            $this->content->text .= html_writer::end_tag('ul');
+            $this->content->text .= html_writer::end_tag('div');
+	    
+	    $this->content->text .= html_writer::start_tag('div', 
+		array('class' => 'block-massaction-action'));
+            $this->content->text .= html_writer::start_tag('ul');
+            $this->content->text .= html_writer::start_tag('li');
+            $this->content->text .= get_string('withselected', 'block_massaction').':';
+            $this->content->text .= html_writer::end_tag('li');
+        
+	    // Print the action links.
             $actionicons = array(
                 'outdent' => 't/left',
                 'indent'  => 't/right',
@@ -133,30 +155,54 @@ EOB;
                 'show'    => 't/hide',
                 'delete'  => 't/delete'
             );
-
-            foreach ($actionicons as $action => $iconpath) {
-                $pixpath    = $OUTPUT->pix_url($iconpath);
-                $actiontext = get_string('action_'.$action, 'block_massaction');
-
-                $this->content->text .= <<< EOB
-    <br/>
-    <a id="block-massaction-{$action}" class="massaction-action" href="javascript:void(0);">
-    	<img src="{$pixpath}" alt="{$actiontext}" title="{$actiontext}"/>&nbsp;{$actiontext}
-    </a>
-EOB;
+			
+			 foreach ($actionicons as $action => $iconpath) {
+                $this->content->text .= html_writer::start_tag('li');
+                $this->content->text .= html_writer::start_tag('a',
+                    array('id'    => 'block-massaction-' .$action,
+			  'class' => 'massaction-action',
+			  'href'  => 'javascript:void(0);'));
+                $this->content->text .= $OUTPUT->pix_icon($iconpath, get_string('action_'.$action, 'block_massaction'));
+                $this->content->text .= get_string('action_'.$action, 'block_massaction');
+                $this->content->text .= html_writer::end_tag('a');
+                $this->content->text .= html_writer::end_tag('li');
             }
-            $this->content->text .= html_writer::empty_tag('br');
+            $this->content->text .= html_writer::end_tag('ul');
+            $this->content->text .= html_writer::end_tag('div');
+
+            // Print the action links.
+            $actions = array(
+                'move',
+                'clone'
+            );
+
+	    $this->content->text .= html_writer::start_tag('div', 
+		array('class' => 'block-massaction-operation'));
+            $this->content->text .= html_writer::start_tag('ul');
+            foreach ($actions as $action) {
+                $this->content->text .= html_writer::start_tag('li');
+                $this->content->text .= html_writer::start_tag('select',
+                    array('id' => 'block-massaction-' . $action));
+                $this->content->text .= html_writer::start_tag('option',
+                    array('value' => ''));
+                $this->content->text .= get_string('action_' . $action, 'block_massaction');
+                $this->content->text .= html_writer::end_tag('option');
+                $this->content->text .= html_writer::end_tag('select');
+                $this->content->text .= html_writer::end_tag('li');
+            }
+            $this->content->text .= html_writer::end_tag('ul');
+            $this->content->text .= html_writer::end_tag('div');
+
             $this->content->text .= <<< EOB
-    <select id="block-massaction-move">
-    	<option value="">{$str['action_move']}</option>
-    </select>
-    <select id="block-massaction-clone">
-    	<option value="">{$str['action_clone']}</option>
-    </select>
-    {$formhtml}
-    <div id="block-massaction-help-icon">{$OUTPUT->help_icon('usage', 'block_massaction')}</div>
-</div>
+            {$formhtml}
 EOB;
+
+            $this->content->text .= html_writer::start_tag('div',
+                array('id' => 'block-massaction-help-icon'));
+            $this->content->text .= $OUTPUT->help_icon('usage', 'block_massaction');
+            $this->content->text .= html_writer::end_tag('div');
+	
+	$this->content->text .= html_writer::end_tag('div');
         }
 
         return $this->content;

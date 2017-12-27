@@ -1,32 +1,32 @@
-#block-massaction-selectsome {
-    width: 99%;
+.block-massaction-jsenabled {
+    margin-left: -16px;
+}
+
+.block-massaction-jsenabled li {
+    list-style: none ;
+}
+
+.block-massaction-action a .icon {
+    margin-bottom: 3px;
+}
+
+.block-massaction-select, .block-massaction-action {
+    margin-bottom: 20px;
+}
+
+#block-massaction-selectsome, #block-massaction-move, #block-massaction-clone {
+    width: 100%;
 }
 
 #block-massaction-move {
-    margin-left: 0.5em;
-    max-width: 95%;
-}
-
-#block-massaction-clone {
-    margin-left: 0.5em;
-    max-width: 95%;
+    margin-bottom: 5px;
 }
 
 #block-massaction-selectnone {
     float: right;
-    position: relative;
-}
-
-.block_massaction .massaction-action {
-    margin-left: 0.5em;
-    position: relative;
 }
 
 #block-massaction-help-icon {
-    padding: 0.2em;
+    margin: -5px 0 -5px 0;
     text-align: center;
-}
-
-#block-massaction-module-deletion-list {
-    padding-bottom: 0.1em;
 }
