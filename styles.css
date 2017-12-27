@@ -5,18 +5,21 @@
 .block-massaction-select > ul,
 .block-massaction-action > ul,
 .block-massaction-operation > ul {
-    list-style-type: none ;
+    list-style-type: none;
 }
 
 .block-massaction-action a .icon {
     margin-bottom: 3px;
 }
 
-.block-massaction-select, .block-massaction-action {
+.block-massaction-select,
+.block-massaction-action {
     margin-bottom: 20px;
 }
 
-#block-massaction-selectsome, #block-massaction-move, #block-massaction-clone {
+#block-massaction-selectsome,
+#block-massaction-move,
+#block-massaction-clone {
     width: 100%;
 }
 

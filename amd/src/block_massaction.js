@@ -322,7 +322,7 @@ define(['jquery', 'core/str'], function($, corestr) {
                 var nothingSelected = corestr.get_string('noitemselected', 'block_massaction');
                 $.when(nothingSelected).done(function(alertString) {
                     window.alert(alertString);
-                });;
+                });
             }
         }
     };
