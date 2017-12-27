@@ -2,8 +2,10 @@
     margin-left: -16px;
 }
 
-.block-massaction-jsenabled li {
-    list-style: none ;
+.block-massaction-select > ul,
+.block-massaction-action > ul,
+.block-massaction-operation > ul {
+    list-style-type: none ;
 }
 
 .block-massaction-action a .icon {
